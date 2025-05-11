@@ -36,7 +36,7 @@ volatile int jakeBrakeMinRpm = 200; // Adjust the min. RPM for the jake brake (a
 
 // Choose the Diesel (or whatever) ignition "knock" sound (played in the fixed sampling rate interrupt, uncomment the one you want,
 // play around here, the results are amazing, if you hit the right combination with the idle sound!) --------
-volatile int dieselKnockVolumePercentage = 600; // Adjust the Diesel knock volume (usually = 200 - 600%) 700
+volatile int dieselKnockVolumePercentage = 200; // Adjust the Diesel knock volume (usually = 200 - 600%) 700
 volatile int dieselKnockIdleVolumePercentage = 0; // Diesel knock volume while no throttle is applied (usually = 20%)
 volatile int dieselKnockStartPoint = 10; // Volume will raise above this throttle input( usually 0, for "open pipe" exhaust about 250)
 volatile int dieselKnockInterval = 12; // Idle sample length divided by this number (1 - 20, depending on sound files)
@@ -162,9 +162,9 @@ const uint8_t escBrakeSteps = 30; // determines, how fast the ESC is able to bra
 const uint8_t escAccelerationSteps = 3; // determines, how fast the ESC is able to accelerate (2 - 3, 3 for King Hauler)
 
 // Gearbox parameters ---------------------------------------------------------------------------------------------------
-const boolean automatic = false; // false = linear rpm curve, true = automatic transmission with torque converter is simulated (use it, if you don't have a real shifting transmission)
+const boolean automatic = true; // false = linear rpm curve, true = automatic transmission with torque converter is simulated (use it, if you don't have a real shifting transmission)
 #define NumberOfAutomaticGears 6 // <<------- Select 3, 4 or 6 gears!
-const boolean doubleClutch = true; // do not activate it at the same time as automatic!
+const boolean doubleClutch = false; // do not activate it at the same time as automatic!
 const boolean shiftingAutoThrottle = true; // For Tamiya 3 speed tansmission, throttle is altered for synchronizing, if "true"
 
 // Clutch parameters ---------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ uint16_t clutchEngagingPoint = 100; // CEP. The "clutch" is engaging above this 
 
 // Engine parameters ----------------------------------------------------------------------------------------------------
 // Engine max. RPM in % of idle RPM. About 200% for big Diesels, 390% for fast running motors.
-uint32_t MAX_RPM_PERCENTAGE = 400; // NOTE! Was called TOP_SPEED_MULTIPLIER (TSM) in earlier versions and was a multiplier instead of a percentage!
+uint32_t MAX_RPM_PERCENTAGE = 600; // NOTE! Was called TOP_SPEED_MULTIPLIER (TSM) in earlier versions and was a multiplier instead of a percentage!
 
 // Engine mass simulation
 const int8_t acc = 2; // Acceleration step (2) 1 = slow for locomotive engine, 9 = fast for trophy truck. Always 2 for automatic transmission!

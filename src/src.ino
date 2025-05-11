@@ -3200,136 +3200,7 @@ void eepromDebugRead()
 
 void mapThrottle()
 {
-
-  // Input is around 1000 - 2000us, output 0-500 for forward and backwards
-
-#if defined TRACKED_MODE        // Dual throttle input for caterpillar vehicles ------------------
-  int16_t currentThrottleLR[4]; // 2 & 3 is used, so required array size = 4!
-
-  // check if pulsewidths 2 + 3 look like servo pulses
-  for (int i = 2; i < 4; i++)
-  {
-    if (pulseWidth[i] > pulseMinLimit[i] && pulseWidth[i] < pulseMaxLimit[i])
-    {
-      if (pulseWidth[i] < pulseMin[i])
-        pulseWidth[i] = pulseMin[i]; // Constrain the value
-      if (pulseWidth[i] > pulseMax[i])
-        pulseWidth[i] = pulseMax[i];
-
-      // calculate a throttle value from the pulsewidth signal
-      if (pulseWidth[i] > pulseMaxNeutral[i])
-      {
-        currentThrottleLR[i] = map(pulseWidth[i], pulseMaxNeutral[i], pulseMax[i], 0, 500);
-      }
-      else if (pulseWidth[i] < pulseMinNeutral[i])
-      {
-        currentThrottleLR[i] = map(pulseWidth[i], pulseMinNeutral[i], pulseMin[i], 0, 500);
-      }
-      else
-      {
-        currentThrottleLR[i] = 0;
-      }
-    }
-  }
-
-  // Mixing both sides together (take the bigger value)
-  currentThrottle = max(currentThrottleLR[2], currentThrottleLR[3]);
-
-  // Print debug infos
-  static unsigned long printTrackedMillis;
-#ifdef TRACKED_DEBUG // can slow down the playback loop!
-  if (millis() - printTrackedMillis > 1000)
-  { // Every 1000ms
-    printTrackedMillis = millis();
-
-    Serial.printf("TRACKED DEBUG:\n");
-    Serial.printf("currentThrottleLR[2]: %i\n", currentThrottleLR[2]);
-    Serial.printf("currentThrottleLR[3]: %i\n", currentThrottleLR[3]);
-    Serial.printf("currentThrottle: %i\n", currentThrottle);
-  }
-#endif // TRACKED_DEBUG
-
-#elif defined EXCAVATOR_MODE // Excavator mode ----------------------------------------------
-
-  static bool engineInit = false; // Only allow to start engine after switch was in up position
-  static unsigned long rpmLoweringMillis;
-  static uint8_t rpmLowering;
-
-  // calculate a throttle value from the pulsewidth signal (forward only)
-  if (pulseWidth[3] > pulseMaxNeutral[3])
-  {
-    currentThrottle = map(pulseWidth[3], pulseMaxNeutral[3], pulseMax[3], 0, (500 - rpmLowering));
-  }
-  else
-  {
-    currentThrottle = 0;
-  }
-
-  // Engine on / off via 3 position switch
-  if (pulseWidth[3] < 1200 && currentRpm < 50)
-  { // Off
-    engineInit = true;
-    engineOn = false;
-    // rpmLoweringMillis = millis();
-  }
-  else
-  { // On
-    if (engineInit)
-      engineOn = true;
-  }
-
-  // Engine RPM lowering, if hydraulic not used for 5s
-  if (hydraulicLoad > 1 || pulseWidth[3] < pulseMaxNeutral[3])
-    rpmLoweringMillis = millis();
-  if (millis() - rpmLoweringMillis > 5000)
-    rpmLowering = 250; // Medium RPM
-  else
-    rpmLowering = 0; // Full RPM
-
-#elif defined AIRPLANE_MODE // Airplane mode ----------------------------------------------
-
-  // Never engage clutch
-  maxClutchSlippingRpm = 500;
-  clutchEngagingPoint = 500;
-
-  // calculate a throttle value from the pulsewidth signal (forward only, throttle zero @1000)
-  if (pulseWidth[3] > 1100)
-  {
-    currentThrottle = map(pulseWidth[3], 1100, 2000, 0, 500);
-  }
-  else
-  {
-    currentThrottle = 0;
-  }
-
-#else // Normal mode ---------------------------------------------------------------------------
-
-  // check if the pulsewidth looks like a servo pulse
-  if (pulseWidth[3] > pulseMinLimit[3] && pulseWidth[3] < pulseMaxLimit[3])
-  {
-    if (pulseWidth[3] < pulseMin[3])
-      pulseWidth[3] = pulseMin[3]; // Constrain the value
-    if (pulseWidth[3] > pulseMax[3])
-      pulseWidth[3] = pulseMax[3];
-
-    // calculate a throttle value from the pulsewidth signal
-    if (pulseWidth[3] > pulseMaxNeutral[3])
-    {
-      currentThrottle = map(pulseWidth[3], pulseMaxNeutral[3], pulseMax[3], 0, 500);
-    }
-    else if (pulseWidth[3] < pulseMinNeutral[3])
-    {
-      currentThrottle = map(pulseWidth[3], pulseMinNeutral[3], pulseMin[3], 0, 500);
-    }
-    else
-    {
-      currentThrottle = 0;
-    }
-  }
-#endif
-
 currentThrottle = map(analogRead(35),0,3900,0,500);
-
   // Auto throttle --------------------------------------------------------------------------
 #if not defined EXCAVATOR_MODE
   // Auto throttle while gear shifting (synchronizing the Tamiya 3 speed gearbox)
@@ -3343,7 +3214,7 @@ currentThrottle = map(analogRead(35),0,3900,0,500);
   }
 #endif
   
-  Serial.printf("currentThrottle:%i,rpm:%i\n", currentThrottle,currentRpm);
+
   // As a base for some calculations below, fade the current throttle to make it more natural
   static unsigned long throttleFaderMicros;
   static boolean blowoffLock;
@@ -3644,6 +3515,7 @@ void engineMassSimulation()
 #endif
 
   lastThrottle = _currentThrottle;
+  Serial.printf("currentThrottle:%i,rpm:%i,\n", currentThrottle,currentRpm);
 }
 
 //
@@ -3702,349 +3574,349 @@ uint32_t indicatorFade = 300; // 300 is the fading time, simulating an incandesc
 // Brake light sub function ---------------------------------
 void brakeLightsSub(uint8_t brightness)
 {
-  if (escIsBraking)
-  {
-    tailLight.pwm(255 - crankingDim);  // Taillights (full brightness)
-    brakeLight.pwm(255 - crankingDim); // Brakelight on
-  }
-  else
-  {
-    tailLight.pwm(constrain(brightness - (crankingDim / 2), (brightness / 2), 255));  // Taillights (reduced brightness)
-    brakeLight.pwm(constrain(brightness - (crankingDim / 2), (brightness / 2), 255)); // Brakelight (reduced brightness)
-  }
+  // if (escIsBraking)
+  // {
+  //   tailLight.pwm(255 - crankingDim);  // Taillights (full brightness)
+  //   brakeLight.pwm(255 - crankingDim); // Brakelight on
+  // }
+  // else
+  // {
+  //   tailLight.pwm(constrain(brightness - (crankingDim / 2), (brightness / 2), 255));  // Taillights (reduced brightness)
+  //   brakeLight.pwm(constrain(brightness - (crankingDim / 2), (brightness / 2), 255)); // Brakelight (reduced brightness)
+  // }
 }
 
 // Headlights sub function ---------------------------------
 void headLightsSub(bool head, bool fog, bool roof, bool park)
 {
 
-  fogLightOn = fog;
+  // fogLightOn = fog;
 
-  if (xenonLights) // Optional Xenon ignition flash
-  {
-    if (millis() - xenonMillis > 50)
-      xenonIgnitionFlash = 0;
-    else
-      xenonIgnitionFlash = 170; // bulb is brighter for 50ms
-  }
+  // if (xenonLights) // Optional Xenon ignition flash
+  // {
+  //   if (millis() - xenonMillis > 50)
+  //     xenonIgnitionFlash = 0;
+  //   else
+  //     xenonIgnitionFlash = 170; // bulb is brighter for 50ms
+  // }
 
-  if (separateFullBeam) // separate full beam bulb, wired to "rooflight" pin ----
-  {
-    // Headlights (low beam bulb)
-    if (!head && !park)
-    {
-      headLight.off();
-      xenonMillis = millis();
-      if (!headLightsFlasherOn)
-        headLightsHighBeamOn = false;
-    }
-    else if (park)
-    { // Parking lights
-      headLight.pwm(constrain(headlightParkingBrightness - crankingDim, (headlightParkingBrightness / 2), 255));
-      xenonMillis = millis();
-      if (!headLightsFlasherOn)
-        headLightsHighBeamOn = false;
-    }
-    else
-    { // ON
-      headLight.pwm(constrain(255 - crankingDim - 170 + xenonIgnitionFlash, 0, 255));
-    }
-    // Headlights (high beam bulb)
-    if (headLightsFlasherOn || (headLightsHighBeamOn && head))
-      roofLight.pwm(200 - crankingDim);
-    else
-      roofLight.off();
-  }
-  else // Bulbs wired as labeled on the board ----
-  {
-    // Headlights
-    if (!head && !park)
-    { // OFF or flasher
-      if (!headLightsFlasherOn)
-        headLight.off();
-      else
-        headLight.on();
-      xenonMillis = millis();
-      headLightsHighBeamOn = false;
-    }
-    else if (park)
-    { // Parking lights
-      if (!headLightsFlasherOn)
-        headLight.pwm(constrain(headlightParkingBrightness - crankingDim, (headlightParkingBrightness / 2), 255));
-      else
-        headLight.on();
-      xenonMillis = millis();
-      headLightsHighBeamOn = false;
-    }
-    else
-    { // ON
-      headLight.pwm(constrain(255 - crankingDim - dipDim + xenonIgnitionFlash, 0, 255));
-    }
+  // if (separateFullBeam) // separate full beam bulb, wired to "rooflight" pin ----
+  // {
+  //   // Headlights (low beam bulb)
+  //   if (!head && !park)
+  //   {
+  //     headLight.off();
+  //     xenonMillis = millis();
+  //     if (!headLightsFlasherOn)
+  //       headLightsHighBeamOn = false;
+  //   }
+  //   else if (park)
+  //   { // Parking lights
+  //     headLight.pwm(constrain(headlightParkingBrightness - crankingDim, (headlightParkingBrightness / 2), 255));
+  //     xenonMillis = millis();
+  //     if (!headLightsFlasherOn)
+  //       headLightsHighBeamOn = false;
+  //   }
+  //   else
+  //   { // ON
+  //     headLight.pwm(constrain(255 - crankingDim - 170 + xenonIgnitionFlash, 0, 255));
+  //   }
+  //   // Headlights (high beam bulb)
+  //   if (headLightsFlasherOn || (headLightsHighBeamOn && head))
+  //     roofLight.pwm(200 - crankingDim);
+  //   else
+  //     roofLight.off();
+  // }
+  // else // Bulbs wired as labeled on the board ----
+  // {
+  //   // Headlights
+  //   if (!head && !park)
+  //   { // OFF or flasher
+  //     if (!headLightsFlasherOn)
+  //       headLight.off();
+  //     else
+  //       headLight.on();
+  //     xenonMillis = millis();
+  //     headLightsHighBeamOn = false;
+  //   }
+  //   else if (park)
+  //   { // Parking lights
+  //     if (!headLightsFlasherOn)
+  //       headLight.pwm(constrain(headlightParkingBrightness - crankingDim, (headlightParkingBrightness / 2), 255));
+  //     else
+  //       headLight.on();
+  //     xenonMillis = millis();
+  //     headLightsHighBeamOn = false;
+  //   }
+  //   else
+  //   { // ON
+  //     headLight.pwm(constrain(255 - crankingDim - dipDim + xenonIgnitionFlash, 0, 255));
+  //   }
 
-    // Roof lights
-    if (!roof)
-      roofLight.off();
-    else
-      roofLight.pwm(130 - crankingDim);
-  } // ----
+  //   // Roof lights
+  //   if (!roof)
+  //     roofLight.off();
+  //   else
+  //     roofLight.pwm(130 - crankingDim);
+  // } // ----
 
-  // Fog lights
-  if (!fog || noFogLights)
-    fogLight.off();
-  else
-    fogLight.pwm(fogLightBrightness - crankingDim);
+  // // Fog lights
+  // if (!fog || noFogLights)
+  //   fogLight.off();
+  // else
+  //   fogLight.pwm(fogLightBrightness - crankingDim);
 }
 
 // Main LED function --------------------------------------------------------------------------------------
 void led()
 {
 
-  if (ledIndicators)
-  {
-    indicatorFade = 0; // No soft indicator on / off, if LED
-  }
-  else
-  {
-    indicatorFade = 300; // Soft indicator on / off, if not LED
-  }
+//   if (ledIndicators)
+//   {
+//     indicatorFade = 0; // No soft indicator on / off, if LED
+//   }
+//   else
+//   {
+//     indicatorFade = 300; // Soft indicator on / off, if not LED
+//   }
 
-  // Lights brightness ----
-  if (flickeringWileCranking) // Flickering
-  {
-    static unsigned long flickerMillis;
-    if (millis() - flickerMillis > 30)
-    { // Every 30ms
-      flickerMillis = millis();
-      if (engineStart)
-        crankingDim = random(25, 55);
-      else
-        crankingDim = 0; // lights are dimmer and flickering while engine cranking
-    }
-  }
-  else // Not flickering
-  {
-    if (engineStart)
-      crankingDim = 50;
-    else
-      crankingDim = 0; // lights are dimmer while engine cranking
-  }
+//   // Lights brightness ----
+//   if (flickeringWileCranking) // Flickering
+//   {
+//     static unsigned long flickerMillis;
+//     if (millis() - flickerMillis > 30)
+//     { // Every 30ms
+//       flickerMillis = millis();
+//       if (engineStart)
+//         crankingDim = random(25, 55);
+//       else
+//         crankingDim = 0; // lights are dimmer and flickering while engine cranking
+//     }
+//   }
+//   else // Not flickering
+//   {
+//     if (engineStart)
+//       crankingDim = 50;
+//     else
+//       crankingDim = 0; // lights are dimmer while engine cranking
+//   }
 
-  if (headLightsFlasherOn || headLightsHighBeamOn)
-    dipDim = 10;
-  else
-    dipDim = 170; // High / low beam and headlight flasher (SBUS CH5)
+//   if (headLightsFlasherOn || headLightsHighBeamOn)
+//     dipDim = 10;
+//   else
+//     dipDim = 170; // High / low beam and headlight flasher (SBUS CH5)
 
-  // Reversing light ----
-  if ((engineRunning || engineStart) && escInReverse)
-    reversingLight.pwm(reversingLightBrightness - crankingDim);
-  else
-    reversingLight.off();
+//   // Reversing light ----
+//   if ((engineRunning || engineStart) && escInReverse)
+//     reversingLight.pwm(reversingLightBrightness - crankingDim);
+//   else
+//     reversingLight.off();
 
-#if not defined SPI_DASHBOARD
-    // Beacons (blue light) ----
-#if not defined TRACKED_MODE // Normal beacons mode
-  if (blueLightTrigger)
-  {
-    if (flashingBlueLight)
-    {
-      beaconLight1.flash(30, 80, 400, 2);      // Simulate double flash lights
-      beaconLight2.flash(30, 80, 400, 2, 330); // Simulate double flash lights (with delay for first pass)
-    }
-    else
-    {
-      beaconLight1.flash(30, 500, 0, 0);      // Simulate rotating beacon lights with short flashes
-      beaconLight2.flash(30, 500, 0, 0, 100); // Simulate rotating beacon lights with short flashes
-    }
-  }
-  else
-  {
-    beaconLight2.off();
-    beaconLight1.off();
-  }
-#else // Beacons used for tank cannon fire simulation flash in TRACKED_MODE
-  if (cannonFlash)
-    beaconLight1.on();
-  else
-    beaconLight1.off();
-#endif
-#endif
+// #if not defined SPI_DASHBOARD
+//     // Beacons (blue light) ----
+// #if not defined TRACKED_MODE // Normal beacons mode
+//   if (blueLightTrigger)
+//   {
+//     if (flashingBlueLight)
+//     {
+//       beaconLight1.flash(30, 80, 400, 2);      // Simulate double flash lights
+//       beaconLight2.flash(30, 80, 400, 2, 330); // Simulate double flash lights (with delay for first pass)
+//     }
+//     else
+//     {
+//       beaconLight1.flash(30, 500, 0, 0);      // Simulate rotating beacon lights with short flashes
+//       beaconLight2.flash(30, 500, 0, 0, 100); // Simulate rotating beacon lights with short flashes
+//     }
+//   }
+//   else
+//   {
+//     beaconLight2.off();
+//     beaconLight1.off();
+//   }
+// #else // Beacons used for tank cannon fire simulation flash in TRACKED_MODE
+//   if (cannonFlash)
+//     beaconLight1.on();
+//   else
+//     beaconLight1.off();
+// #endif
+// #endif
 
-  // Indicators (turn signals, blinkers) ----
-  uint8_t indicatorOffBrightness;
-  if (indicatorsAsSidemarkers) // Indicators used as US style side markers as well
-  {
-    if (lightsState > 1)
-      indicatorOffBrightness = rearlightDimmedBrightness - crankingDim / 2;
-    else
-      indicatorOffBrightness = 0;
-  }
-  else
-  {
-    indicatorOffBrightness = 0;
-  }
+//   // Indicators (turn signals, blinkers) ----
+//   uint8_t indicatorOffBrightness;
+//   if (indicatorsAsSidemarkers) // Indicators used as US style side markers as well
+//   {
+//     if (lightsState > 1)
+//       indicatorOffBrightness = rearlightDimmedBrightness - crankingDim / 2;
+//     else
+//       indicatorOffBrightness = 0;
+//   }
+//   else
+//   {
+//     indicatorOffBrightness = 0;
+//   }
 
-  if (!hazard && !unlock5thWheel && !batteryProtection && hazardsWhile5thWheelUnlocked || !hazard && !batteryProtection && !hazardsWhile5thWheelUnlocked)
-  {
-    // L indicator
-    if (indicatorLon)
-    {
-      if (indicatorL.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness))
-        indicatorSoundOn = true; // Left indicator
-    }
-    else
-    {
-      if (lightsState > 1 && indicatorsAsSidemarkers)
-        indicatorL.pwm(indicatorOffBrightness);
-      else
-        indicatorL.off(indicatorFade);
-    }
+//   if (!hazard && !unlock5thWheel && !batteryProtection && hazardsWhile5thWheelUnlocked || !hazard && !batteryProtection && !hazardsWhile5thWheelUnlocked)
+//   {
+//     // L indicator
+//     if (indicatorLon)
+//     {
+//       if (indicatorL.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness))
+//         indicatorSoundOn = true; // Left indicator
+//     }
+//     else
+//     {
+//       if (lightsState > 1 && indicatorsAsSidemarkers)
+//         indicatorL.pwm(indicatorOffBrightness);
+//       else
+//         indicatorL.off(indicatorFade);
+//     }
 
-    // R indicator
-    if (indicatorRon)
-    {
-      if (indicatorR.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness))
-        indicatorSoundOn = true; // Left indicator
-    }
-    else
-    {
-      if (lightsState > 1)
-        indicatorR.pwm(indicatorOffBrightness);
-      else
-        indicatorR.off(indicatorFade);
-    }
-  }
-  else
-  { // Hazard lights on, if no connection to transmitter (serial & SBUS control mode only)
-    if (indicatorL.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness))
-      indicatorSoundOn = true;
-    indicatorR.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness);
-  }
+//     // R indicator
+//     if (indicatorRon)
+//     {
+//       if (indicatorR.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness))
+//         indicatorSoundOn = true; // Left indicator
+//     }
+//     else
+//     {
+//       if (lightsState > 1)
+//         indicatorR.pwm(indicatorOffBrightness);
+//       else
+//         indicatorR.off(indicatorFade);
+//     }
+//   }
+//   else
+//   { // Hazard lights on, if no connection to transmitter (serial & SBUS control mode only)
+//     if (indicatorL.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness))
+//       indicatorSoundOn = true;
+//     indicatorR.flash(375, 375, 0, 0, 0, indicatorFade, indicatorOffBrightness);
+//   }
 
-  // Headlights, tail lights ----
-#ifdef AUTO_LIGHTS // automatic lights mode (deprecated, not maintained anymore!) ************************
+//   // Headlights, tail lights ----
+// #ifdef AUTO_LIGHTS // automatic lights mode (deprecated, not maintained anymore!) ************************
 
-  if (xenonLights) // Optional Xenon ignition flash
-  {
-    if (millis() - xenonMillis > 50)
-      xenonIgnitionFlash = 0;
-    else
-      xenonIgnitionFlash = 170; // bulb is brighter for 50ms
-  }
-  if (lightsOn && (engineRunning || engineStart))
-  {
-    headLight.pwm(constrain(255 - crankingDim - dipDim + xenonIgnitionFlash, 0, 255));
-    brakeLightsSub(rearlightDimmedBrightness);
-  }
+//   if (xenonLights) // Optional Xenon ignition flash
+//   {
+//     if (millis() - xenonMillis > 50)
+//       xenonIgnitionFlash = 0;
+//     else
+//       xenonIgnitionFlash = 170; // bulb is brighter for 50ms
+//   }
+//   if (lightsOn && (engineRunning || engineStart))
+//   {
+//     headLight.pwm(constrain(255 - crankingDim - dipDim + xenonIgnitionFlash, 0, 255));
+//     brakeLightsSub(rearlightDimmedBrightness);
+//   }
 
-  else
-  {
-    headLight.off();
-    tailLight.off();
-    brakeLight.off();
-    xenonMillis = millis();
-    headLightsHighBeamOn = false;
-  }
+//   else
+//   {
+//     headLight.off();
+//     tailLight.off();
+//     brakeLight.off();
+//     xenonMillis = millis();
+//     headLightsHighBeamOn = false;
+//   }
 
-  // Foglights ----
-  if (lightsOn && engineRunning)
-  {
-    fogLight.pwm(200 - crankingDim);
-    fogLightOn = true;
-  }
-  else
-  {
-    fogLight.off();
-    fogLightOn = false;
-  }
+//   // Foglights ----
+//   if (lightsOn && engineRunning)
+//   {
+//     fogLight.pwm(200 - crankingDim);
+//     fogLightOn = true;
+//   }
+//   else
+//   {
+//     fogLight.off();
+//     fogLightOn = false;
+//   }
 
-  // Roof lights ----
-  if (lightsOn)
-    roofLight.pwm(130 - crankingDim);
-  else
-    roofLight.off();
+//   // Roof lights ----
+//   if (lightsOn)
+//     roofLight.pwm(130 - crankingDim);
+//   else
+//     roofLight.off();
 
-  // Sidelights ----
-  if (engineOn)
-    sideLight.pwm(200 - crankingDim);
-  else
-    sideLight.off();
+//   // Sidelights ----
+//   if (engineOn)
+//     sideLight.pwm(200 - crankingDim);
+//   else
+//     sideLight.off();
 
-  // Cabin lights ----
-  if (!lightsOn)
-    cabLight.pwm(255 - crankingDim);
-  else
-    cabLight.off();
+//   // Cabin lights ----
+//   if (!lightsOn)
+//     cabLight.pwm(255 - crankingDim);
+//   else
+//     cabLight.off();
 
-#else  // manual lights mode ************************
-  // Lights state machine
-  switch (lightsState)
-  {
+// #else  // manual lights mode ************************
+//   // Lights state machine
+//   switch (lightsState)
+//   {
 
-  case 0: // lights off ---------------------------------------------------------------------
-    cabLight.off();
-    sideLight.off();
-    lightsOn = false;
-    headLightsSub(false, false, false, false);
-    brakeLightsSub(0); // 0 brightness, if not braking
-    break;
+//   case 0: // lights off ---------------------------------------------------------------------
+//     cabLight.off();
+//     sideLight.off();
+//     lightsOn = false;
+//     headLightsSub(false, false, false, false);
+//     brakeLightsSub(0); // 0 brightness, if not braking
+//     break;
 
-  case 1: // cab lights ---------------------------------------------------------------------
-    if (noCabLights)
-    {
-      lightsState = 2; // Skip cablights
-    }
-    else
-    {
-      cabLight.pwm(cabLightsBrightness - crankingDim);
-    }
-    sideLight.off();
-    headLightsSub(false, false, false, false);
-    brakeLightsSub(0); // 0 brightness, if not braking
-    break;
+//   case 1: // cab lights ---------------------------------------------------------------------
+//     if (noCabLights)
+//     {
+//       lightsState = 2; // Skip cablights
+//     }
+//     else
+//     {
+//       cabLight.pwm(cabLightsBrightness - crankingDim);
+//     }
+//     sideLight.off();
+//     headLightsSub(false, false, false, false);
+//     brakeLightsSub(0); // 0 brightness, if not braking
+//     break;
 
-  case 2: // cab & roof & side lights ---------------------------------------------------------------------
-    if (!noCabLights)
-    {
-      cabLight.pwm(cabLightsBrightness - crankingDim);
-    }
-    sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
-    headLightsSub(false, false, true, true);
-    fogLight.off();
-    brakeLightsSub(rearlightParkingBrightness); // () = brightness, if not braking
-    break;
+//   case 2: // cab & roof & side lights ---------------------------------------------------------------------
+//     if (!noCabLights)
+//     {
+//       cabLight.pwm(cabLightsBrightness - crankingDim);
+//     }
+//     sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
+//     headLightsSub(false, false, true, true);
+//     fogLight.off();
+//     brakeLightsSub(rearlightParkingBrightness); // () = brightness, if not braking
+//     break;
 
-  case 3: // roof & side & head lights ---------------------------------------------------------------------
-    cabLight.off();
-    sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
-    lightsOn = true;
-    headLightsSub(true, false, true, false);
-    brakeLightsSub(rearlightDimmedBrightness); // 50 brightness, if not braking
-    break;
+//   case 3: // roof & side & head lights ---------------------------------------------------------------------
+//     cabLight.off();
+//     sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
+//     lightsOn = true;
+//     headLightsSub(true, false, true, false);
+//     brakeLightsSub(rearlightDimmedBrightness); // 50 brightness, if not braking
+//     break;
 
-  case 4: // roof & side & head & fog lights ---------------------------------------------------------------------
-    if (noFogLights)
-    {
-      lightsState = 5; // Skip foglights
-    }
-    cabLight.off();
-    sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
-    headLightsSub(true, true, true, false);
-    brakeLightsSub(rearlightDimmedBrightness); // 50 brightness, if not braking
-    break;
+//   case 4: // roof & side & head & fog lights ---------------------------------------------------------------------
+//     if (noFogLights)
+//     {
+//       lightsState = 5; // Skip foglights
+//     }
+//     cabLight.off();
+//     sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
+//     headLightsSub(true, true, true, false);
+//     brakeLightsSub(rearlightDimmedBrightness); // 50 brightness, if not braking
+//     break;
 
-  case 5: // cab & roof & side & head & fog lights ---------------------------------------------------------------------
-    if (noCabLights)
-    {
-      lightsState = 0; // Skip cablights
-    }
-    cabLight.pwm(cabLightsBrightness - crankingDim);
-    sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
-    headLightsSub(true, true, true, false);
-    brakeLightsSub(rearlightDimmedBrightness); // 50 brightness, if not braking
-    break;
+//   case 5: // cab & roof & side & head & fog lights ---------------------------------------------------------------------
+//     if (noCabLights)
+//     {
+//       lightsState = 0; // Skip cablights
+//     }
+//     cabLight.pwm(cabLightsBrightness - crankingDim);
+//     sideLight.pwm(constrain(sideLightsBrightness - crankingDim, (sideLightsBrightness / 2), 255));
+//     headLightsSub(true, true, true, false);
+//     brakeLightsSub(rearlightDimmedBrightness); // 50 brightness, if not braking
+//     break;
 
-  } // End of state machine
-#endif // End of manual lights mode ************************
+//   } // End of state machine
+// #endif // End of manual lights mode ************************
 }
 
 //
@@ -5737,28 +5609,8 @@ void trailerControl()
 //
 
 void loop()
-{
-
-// #if defined SBUS_COMMUNICATION
-//   readSbusCommands(); // SBUS communication (pin 36)
-//   mcpwmOutput();      // PWM servo signal output
-
-// #elif defined IBUS_COMMUNICATION
-//   readIbusCommands(); // IBUS communication (pin 36)
-//   mcpwmOutput();      // PWM servo signal output
-
-// #elif defined SUMD_COMMUNICATION
-//   readSumdCommands(); // SUMD communication (pin 36)
-//   mcpwmOutput();      // PWM servo signal output
-
-// #elif defined PPM_COMMUNICATION
-//   readPpmCommands(); // PPM communication (pin 36)
-//   mcpwmOutput();     // PWM servo signal output
-
-// #else
-//   // measure RC signals mark space ratio
-  readPwmSignals();
-// #endif
+{ 
+  readPwmSignals(); 
 
   if (xSemaphoreTake(xRpmSemaphore, portMAX_DELAY))
   {
