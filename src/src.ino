@@ -2335,31 +2335,31 @@ void readIbusCommands()
 {
 
   // Loop iBus (fill buffer)
-  loopIbus();
+  // loopIbus();
 
-  // NOTE: The channel mapping is in the order as defined in "channelsetup.h"
-  // for example: sound controller channel 2 (GEARBOX) connects to receiver channel 6
+  // // NOTE: The channel mapping is in the order as defined in "channelsetup.h"
+  // // for example: sound controller channel 2 (GEARBOX) connects to receiver channel 6
 
-  // Proportional channels (in Microseconds)
-  pulseWidthRaw[1] = iBus.readChannel(STEERING - 1);         // CH1 steering
-  pulseWidthRaw[2] = iBus.readChannel(GEARBOX - 1);          // CH2 3 position switch for gearbox (left throttle in tracked mode)
-  pulseWidthRaw[3] = iBus.readChannel(THROTTLE - 1);         // CH3 throttle & brake
-  pulseWidthRaw[4] = iBus.readChannel(HORN - 1);             // CH5 jake brake, high / low beam, headlight flasher, engine on / off
-  pulseWidthRaw[5] = iBus.readChannel(FUNCTION_R - 1);       // CH5 jake brake, high / low beam, headlight flasher, engine on / off
-  pulseWidthRaw[6] = iBus.readChannel(FUNCTION_L - 1);       // CH6 indicators, hazards
-  pulseWidthRaw[7] = iBus.readChannel(POT2 - 1);             // CH7 pot 2
-  pulseWidthRaw[8] = iBus.readChannel(MODE1 - 1);            // CH8 mode 1 switch
-  pulseWidthRaw[9] = iBus.readChannel(MODE2 - 1);            // CH9 mode 2 switch
-  pulseWidthRaw[10] = iBus.readChannel(MOMENTARY1 - 1);      // CH10
-  pulseWidthRaw[11] = iBus.readChannel(HAZARDS - 1);         // CH11
-  pulseWidthRaw[12] = iBus.readChannel(INDICATOR_LEFT - 1);  // CH12
-  pulseWidthRaw[13] = iBus.readChannel(INDICATOR_RIGHT - 1); // CH13
+  // // Proportional channels (in Microseconds)
+  // pulseWidthRaw[1] = iBus.readChannel(STEERING - 1);         // CH1 steering
+  // pulseWidthRaw[2] = iBus.readChannel(GEARBOX - 1);          // CH2 3 position switch for gearbox (left throttle in tracked mode)
+  // pulseWidthRaw[3] = iBus.readChannel(THROTTLE - 1);         // CH3 throttle & brake
+  // pulseWidthRaw[4] = iBus.readChannel(HORN - 1);             // CH5 jake brake, high / low beam, headlight flasher, engine on / off
+  // pulseWidthRaw[5] = iBus.readChannel(FUNCTION_R - 1);       // CH5 jake brake, high / low beam, headlight flasher, engine on / off
+  // pulseWidthRaw[6] = iBus.readChannel(FUNCTION_L - 1);       // CH6 indicators, hazards
+  // pulseWidthRaw[7] = iBus.readChannel(POT2 - 1);             // CH7 pot 2
+  // pulseWidthRaw[8] = iBus.readChannel(MODE1 - 1);            // CH8 mode 1 switch
+  // pulseWidthRaw[9] = iBus.readChannel(MODE2 - 1);            // CH9 mode 2 switch
+  // pulseWidthRaw[10] = iBus.readChannel(MOMENTARY1 - 1);      // CH10
+  // pulseWidthRaw[11] = iBus.readChannel(HAZARDS - 1);         // CH11
+  // pulseWidthRaw[12] = iBus.readChannel(INDICATOR_LEFT - 1);  // CH12
+  // pulseWidthRaw[13] = iBus.readChannel(INDICATOR_RIGHT - 1); // CH13
 
-  if (ibusInit)
-  {
-    // Normalize, auto zero and reverse channels
-    processRawChannels();
-  }
+  // if (ibusInit)
+  // {
+  //   // Normalize, auto zero and reverse channels
+  //   processRawChannels();
+  // }
 }
 
 //
@@ -2369,45 +2369,45 @@ void readIbusCommands()
 //
 void readSumdCommands()
 {
-#if defined SUMD_COMMUNICATION
-  // Signals are coming in via Graupner SUMD protocol
+// #if defined SUMD_COMMUNICATION
+//   // Signals are coming in via Graupner SUMD protocol
 
-  // look for a good SUMD packet from the receiver
-  if (sumd.read(SUMDchannels, &SUMD_failsafe, &SUMD_frame_lost) == 0)
-  {
-    SUMD_init = true;
-  }
+//   // look for a good SUMD packet from the receiver
+//   if (sumd.read(SUMDchannels, &SUMD_failsafe, &SUMD_frame_lost) == 0)
+//   {
+//     SUMD_init = true;
+//   }
 
-  // Proportional channels (in Microseconds)
-  pulseWidthRaw[1] = map(SUMDchannels[STEERING - 1], 1100, 1900, 1000, 2000);    // CH1 steering
-  pulseWidthRaw[2] = map(SUMDchannels[GEARBOX - 1], 1100, 1900, 1000, 2000);     // CH2 3 position switch for gearbox (left throttle in tracked mode)
-  pulseWidthRaw[3] = map(SUMDchannels[THROTTLE - 1], 1100, 1900, 1000, 2000);    // CH3 throttle & brake
-  pulseWidthRaw[4] = map(SUMDchannels[HORN - 1], 1100, 1900, 1000, 2000);        // CH5 jake brake, high / low beam, headlight flasher, engine on / off
-  pulseWidthRaw[5] = map(SUMDchannels[FUNCTION_R - 1], 1100, 1900, 1000, 2000);  // CH5 jake brake, high / low beam, headlight flasher, engine on / off
-  pulseWidthRaw[6] = map(SUMDchannels[FUNCTION_L - 1], 1100, 1900, 1000, 2000);  // CH6 indicators, hazards
-  pulseWidthRaw[7] = map(SUMDchannels[POT2 - 1], 1100, 1900, 1000, 2000);        // CH7 pot 2
-  pulseWidthRaw[8] = map(SUMDchannels[MODE1 - 1], 1100, 1900, 1000, 2000);       // CH8 mode 1 switch
-  pulseWidthRaw[9] = map(SUMDchannels[MODE2 - 1], 1100, 1900, 1000, 2000);       // CH9 mode 2 switch
-  pulseWidthRaw[10] = map(SUMDchannels[MOMENTARY1 - 1], 1100, 1900, 1000, 2000); // CH10
-  pulseWidthRaw[11] = map(SUMDchannels[HAZARDS - 1], 1100, 1900, 1000, 2000);    // CH11
+//   // Proportional channels (in Microseconds)
+//   pulseWidthRaw[1] = map(SUMDchannels[STEERING - 1], 1100, 1900, 1000, 2000);    // CH1 steering
+//   pulseWidthRaw[2] = map(SUMDchannels[GEARBOX - 1], 1100, 1900, 1000, 2000);     // CH2 3 position switch for gearbox (left throttle in tracked mode)
+//   pulseWidthRaw[3] = map(SUMDchannels[THROTTLE - 1], 1100, 1900, 1000, 2000);    // CH3 throttle & brake
+//   pulseWidthRaw[4] = map(SUMDchannels[HORN - 1], 1100, 1900, 1000, 2000);        // CH5 jake brake, high / low beam, headlight flasher, engine on / off
+//   pulseWidthRaw[5] = map(SUMDchannels[FUNCTION_R - 1], 1100, 1900, 1000, 2000);  // CH5 jake brake, high / low beam, headlight flasher, engine on / off
+//   pulseWidthRaw[6] = map(SUMDchannels[FUNCTION_L - 1], 1100, 1900, 1000, 2000);  // CH6 indicators, hazards
+//   pulseWidthRaw[7] = map(SUMDchannels[POT2 - 1], 1100, 1900, 1000, 2000);        // CH7 pot 2
+//   pulseWidthRaw[8] = map(SUMDchannels[MODE1 - 1], 1100, 1900, 1000, 2000);       // CH8 mode 1 switch
+//   pulseWidthRaw[9] = map(SUMDchannels[MODE2 - 1], 1100, 1900, 1000, 2000);       // CH9 mode 2 switch
+//   pulseWidthRaw[10] = map(SUMDchannels[MOMENTARY1 - 1], 1100, 1900, 1000, 2000); // CH10
+//   pulseWidthRaw[11] = map(SUMDchannels[HAZARDS - 1], 1100, 1900, 1000, 2000);    // CH11
 
-  // Failsafe triggering
-  if (SUMD_failsafe)
-  {
-    failSafe = true; // in most cases the rx buffer is not processed fast enough so old data is overwritten
-  }
-  else
-    failSafe = false;
+//   // Failsafe triggering
+//   if (SUMD_failsafe)
+//   {
+//     failSafe = true; // in most cases the rx buffer is not processed fast enough so old data is overwritten
+//   }
+//   else
+//     failSafe = false;
 
-  if (SUMD_init)
-  { // TODO, experimental!
-    // Normalize, auto zero and reverse channels
-    processRawChannels();
+//   if (SUMD_init)
+//   { // TODO, experimental!
+//     // Normalize, auto zero and reverse channels
+//     processRawChannels();
 
-    // Failsafe for RC signals
-    failsafeRcSignals();
-  }
-#endif
+//     // Failsafe for RC signals
+//     failsafeRcSignals();
+//   }
+// #endif
 }
 
 //
@@ -2610,17 +2610,16 @@ void channelZero()
 //
 
 void failsafeRcSignals()
-{
-
-  // Failsafe actions --------
-  if (failSafe)
-  {
-    for (uint8_t i = 1; i < PULSE_ARRAY_SIZE; i++)
-    {
-      if (i != 1 && i != 2 && i != 8 && i != 9)
-        pulseWidth[i] = pulseZero[i]; // Channels to zero position, but never for CH1 (Steering), CH8, CH9
-    }
-  }
+{ 
+  // // Failsafe actions --------
+  // if (failSafe)
+  // {
+  //   for (uint8_t i = 1; i < PULSE_ARRAY_SIZE; i++)
+  //   {
+  //     if (i != 1 && i != 2 && i != 8 && i != 9)
+  //       pulseWidth[i] = pulseZero[i]; // Channels to zero position, but never for CH1 (Steering), CH8, CH9
+  //   }
+  // }
 }
 
 //
@@ -2632,43 +2631,43 @@ void failsafeRcSignals()
 bool beaconControl(uint8_t pulses)
 {
 
-  /* Beacons: "RC DIY LED Rotating Beacon Light Flash For 1/10 Truck Crawler Toy"
-      from: https://www.ebay.ch/itm/303979210629
-      States (every servo signal change from 1000 to 2000us will switch to the next state):
-      0 rotating beacon slow
-      1 Rotating beacon slow
-      2 4x flash
-      3 endless flash
-      4 off
+  // /* Beacons: "RC DIY LED Rotating Beacon Light Flash For 1/10 Truck Crawler Toy"
+  //     from: https://www.ebay.ch/itm/303979210629
+  //     States (every servo signal change from 1000 to 2000us will switch to the next state):
+  //     0 rotating beacon slow
+  //     1 Rotating beacon slow
+  //     2 4x flash
+  //     3 endless flash
+  //     4 off
 
-  */
+  // */
 
-  static unsigned long pulseMillis;
-  static unsigned long pulseWidth = CH3L;
-  static uint8_t i;
+  // static unsigned long pulseMillis;
+  // static unsigned long pulseWidth = CH3L;
+  // static uint8_t i;
 
-  if (millis() - pulseMillis > 40)
-  { // Every 40ms (this is the required minimum)
-    pulseMillis = millis();
-    if (pulseWidth == CH3L)
-    {
-      pulseWidth = CH3R;
-    }
-    else
-    {
-      pulseWidth = CH3L;
-      i++;
-    }
-    mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, pulseWidth);
-  }
+  // if (millis() - pulseMillis > 40)
+  // { // Every 40ms (this is the required minimum)
+  //   pulseMillis = millis();
+  //   if (pulseWidth == CH3L)
+  //   {
+  //     pulseWidth = CH3R;
+  //   }
+  //   else
+  //   {
+  //     pulseWidth = CH3L;
+  //     i++;
+  //   }
+  //   mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, pulseWidth);
+  // }
 
-  if (i >= pulses)
-  {
-    i = 0;
-    return true;
-  }
-  else
-    return false;
+  // if (i >= pulses)
+  // {
+  //   i = 0;
+  //   return true;
+  // }
+  // else
+  //   return false;
 }
 
 //
@@ -2680,191 +2679,191 @@ bool beaconControl(uint8_t pulses)
 
 void mcpwmOutput()
 {
-  if (autoZeroDone) // Only generate servo signals, if auto zero was successful!
-  {
+//   if (autoZeroDone) // Only generate servo signals, if auto zero was successful!
+//   {
 
-    // Steering CH1 **********************
-    uint16_t steeringServoMicros;
-    static uint16_t steeringServoMicrosDelayed = CH1C;
-    static unsigned long steeringDelayMicros;
-    int16_t steeringDeviation = 1;
-    if (micros() - steeringDelayMicros > STEERING_RAMP_TIME)
-    { // Adjustable steering max. ramp speed
-      // It is required to calculate a variable deviation, according to how much "delay" the steering ramp time has
-      // Reason: we have a high interrupt load at high engine RPM. The servo movements are getting too slow otherwise
-      steeringDeviation = (micros() - steeringDelayMicros) - STEERING_RAMP_TIME;
-      steeringDeviation = constrain(steeringDeviation, 1, 10);
-      steeringDelayMicros = micros();
+//     // Steering CH1 **********************
+//     uint16_t steeringServoMicros;
+//     static uint16_t steeringServoMicrosDelayed = CH1C;
+//     static unsigned long steeringDelayMicros;
+//     int16_t steeringDeviation = 1;
+//     if (micros() - steeringDelayMicros > STEERING_RAMP_TIME)
+//     { // Adjustable steering max. ramp speed
+//       // It is required to calculate a variable deviation, according to how much "delay" the steering ramp time has
+//       // Reason: we have a high interrupt load at high engine RPM. The servo movements are getting too slow otherwise
+//       steeringDeviation = (micros() - steeringDelayMicros) - STEERING_RAMP_TIME;
+//       steeringDeviation = constrain(steeringDeviation, 1, 10);
+//       steeringDelayMicros = micros();
 
-      if (pulseWidth[1] < 1500)
-        steeringServoMicros = map(pulseWidth[1], 1000, 1500, CH1L, CH1C);
-      else if (pulseWidth[1] > 1500)
-        steeringServoMicros = map(pulseWidth[1], 1500, 2000, CH1C, CH1R);
-      else
-        steeringServoMicros = CH1C;
-      if (steeringServoMicrosDelayed < steeringServoMicros)
-        steeringServoMicrosDelayed += steeringDeviation;
-      if (steeringServoMicrosDelayed > steeringServoMicros)
-        steeringServoMicrosDelayed -= steeringDeviation;
-      steeringServoMicrosDelayed = constrain(steeringServoMicrosDelayed, min(CH1L, CH1R), max(CH1L, CH1R));
-      // Serial.printf("steeringServoMicros: %s\n", steeringServoMicros);
-      // Serial.printf("steeringServoMicrosDelayed: %s\n", steeringServoMicrosDelayed);
-      mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, steeringServoMicrosDelayed);
-    }
+//       if (pulseWidth[1] < 1500)
+//         steeringServoMicros = map(pulseWidth[1], 1000, 1500, CH1L, CH1C);
+//       else if (pulseWidth[1] > 1500)
+//         steeringServoMicros = map(pulseWidth[1], 1500, 2000, CH1C, CH1R);
+//       else
+//         steeringServoMicros = CH1C;
+//       if (steeringServoMicrosDelayed < steeringServoMicros)
+//         steeringServoMicrosDelayed += steeringDeviation;
+//       if (steeringServoMicrosDelayed > steeringServoMicros)
+//         steeringServoMicrosDelayed -= steeringDeviation;
+//       steeringServoMicrosDelayed = constrain(steeringServoMicrosDelayed, min(CH1L, CH1R), max(CH1L, CH1R));
+//       // Serial.printf("steeringServoMicros: %s\n", steeringServoMicros);
+//       // Serial.printf("steeringServoMicrosDelayed: %s\n", steeringServoMicrosDelayed);
+//       mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, steeringServoMicrosDelayed);
+//     }
 
-    // Shifting CH2 **********************
-    static uint16_t shiftingServoMicros;
-#if not defined MODE1_SHIFTING
-    if (selectedGear == 1)
-      shiftingServoMicros = CH2L;
-    if (selectedGear == 2)
-      shiftingServoMicros = CH2C;
-    if (selectedGear >= 3)
-      shiftingServoMicros = CH2R;
-#else
-#undef TRANSMISSION_NEUTRAL // Not usable in this case!
-    if (currentSpeed > 50 && currentSpeed < 150)
-    { // Only shift WPL gearbox, if vehicle is moving slowly, so it's engaging properly
-      if (!mode1)
-      {
-        shiftingServoMicros = CH2L;
-        lowRange = true;
-      }
-      else
-      {
-        shiftingServoMicros = CH2C;
-        lowRange = false;
-      }
-    }
-#endif
-    mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, shiftingServoMicros);
+//     // Shifting CH2 **********************
+//     static uint16_t shiftingServoMicros;
+// #if not defined MODE1_SHIFTING
+//     if (selectedGear == 1)
+//       shiftingServoMicros = CH2L;
+//     if (selectedGear == 2)
+//       shiftingServoMicros = CH2C;
+//     if (selectedGear >= 3)
+//       shiftingServoMicros = CH2R;
+// #else
+// #undef TRANSMISSION_NEUTRAL // Not usable in this case!
+//     if (currentSpeed > 50 && currentSpeed < 150)
+//     { // Only shift WPL gearbox, if vehicle is moving slowly, so it's engaging properly
+//       if (!mode1)
+//       {
+//         shiftingServoMicros = CH2L;
+//         lowRange = true;
+//       }
+//       else
+//       {
+//         shiftingServoMicros = CH2C;
+//         lowRange = false;
+//       }
+//     }
+// #endif
+//     mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, shiftingServoMicros);
 
-    // Winch CH3 **********************
-#if defined NO_WINCH_DELAY
-    uint16_t winchDelayTarget = 0; // Servo signal for winch is changed immediately
-#else
-    uint16_t winchDelayTarget = 6000; // Servo signal for winch is changed slowly (12000)
-#endif
+//     // Winch CH3 **********************
+// #if defined NO_WINCH_DELAY
+//     uint16_t winchDelayTarget = 0; // Servo signal for winch is changed immediately
+// #else
+//     uint16_t winchDelayTarget = 6000; // Servo signal for winch is changed slowly (12000)
+// #endif
 
-#if defined MODE2_WINCH
-    static uint16_t winchServoMicrosTarget = CH3C;
-    static uint16_t winchServoMicros = CH3C;
-    static unsigned long winchDelayMicros;
-    if (micros() - winchDelayMicros > winchDelayTarget)
-    {
-      winchDelayMicros = micros();
-      if (winchPull)
-        winchServoMicrosTarget = CH3L;
-      else if (winchRelease)
-        winchServoMicrosTarget = CH3R;
-      else
-        winchServoMicrosTarget = CH3C;
-      if (winchServoMicros < winchServoMicrosTarget)
-        winchServoMicros++;
-      if (winchServoMicros > winchServoMicrosTarget)
-        winchServoMicros--;
-    }
-    mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, winchServoMicros);
-#endif
+// #if defined MODE2_WINCH
+//     static uint16_t winchServoMicrosTarget = CH3C;
+//     static uint16_t winchServoMicros = CH3C;
+//     static unsigned long winchDelayMicros;
+//     if (micros() - winchDelayMicros > winchDelayTarget)
+//     {
+//       winchDelayMicros = micros();
+//       if (winchPull)
+//         winchServoMicrosTarget = CH3L;
+//       else if (winchRelease)
+//         winchServoMicrosTarget = CH3R;
+//       else
+//         winchServoMicrosTarget = CH3C;
+//       if (winchServoMicros < winchServoMicrosTarget)
+//         winchServoMicros++;
+//       if (winchServoMicros > winchServoMicrosTarget)
+//         winchServoMicros--;
+//     }
+//     mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, winchServoMicros);
+// #endif
 
-// Tractor 3 point yydraulic CH3 **********************
-#if defined MODE2_HYDRAULIC
+// // Tractor 3 point yydraulic CH3 **********************
+// #if defined MODE2_HYDRAULIC
 
-    static uint16_t rampsServoMicrosTarget = CH3C;
-    static uint16_t rampsServoMicros = CH3C;
-    static unsigned long rampsDelayMicros;
+//     static uint16_t rampsServoMicrosTarget = CH3C;
+//     static uint16_t rampsServoMicros = CH3C;
+//     static unsigned long rampsDelayMicros;
 
-    unsigned long rampsDelayMicrosTarget = map(abs(winchSpeed), 1, 100, 30000, 2000); // Percentage to delay 1, 100, 30000, 2000
-    // Serial.println(rampsDelayMicrosTarget);
-    // Serial.println(winchSpeed);
+//     unsigned long rampsDelayMicrosTarget = map(abs(winchSpeed), 1, 100, 30000, 2000); // Percentage to delay 1, 100, 30000, 2000
+//     // Serial.println(rampsDelayMicrosTarget);
+//     // Serial.println(winchSpeed);
 
-    if (micros() - rampsDelayMicros > rampsDelayMicrosTarget)
-    {
-      rampsDelayMicros = micros();
+//     if (micros() - rampsDelayMicros > rampsDelayMicrosTarget)
+//     {
+//       rampsDelayMicros = micros();
 
-      if (winchSpeed > 1)
-        rampsServoMicrosTarget = CH3L; // up
-      else if (winchSpeed < -1)
-        rampsServoMicrosTarget = CH3R; // down
-      else
-        rampsServoMicrosTarget = rampsServoMicros; // stop
+//       if (winchSpeed > 1)
+//         rampsServoMicrosTarget = CH3L; // up
+//       else if (winchSpeed < -1)
+//         rampsServoMicrosTarget = CH3R; // down
+//       else
+//         rampsServoMicrosTarget = rampsServoMicros; // stop
 
-      // Movement
-      if (rampsServoMicros < rampsServoMicrosTarget)
-        rampsServoMicros++;
-      if (rampsServoMicros > rampsServoMicrosTarget)
-        rampsServoMicros--;
-    }
-    mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, rampsServoMicros);
-#endif
+//       // Movement
+//       if (rampsServoMicros < rampsServoMicrosTarget)
+//         rampsServoMicros++;
+//       if (rampsServoMicros > rampsServoMicrosTarget)
+//         rampsServoMicros--;
+//     }
+//     mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, rampsServoMicros);
+// #endif
 
-    // Beacon CH3 **********************
-#if defined CH3_BEACON
+//     // Beacon CH3 **********************
+// #if defined CH3_BEACON
 
-    // Init (5 pulses are required to shut beacons off after power on)
-    static bool blueLightInit;
-    if (!blueLightInit)
-    {
-      if (beaconControl(5))
-        blueLightInit = true;
-    }
+//     // Init (5 pulses are required to shut beacons off after power on)
+//     static bool blueLightInit;
+//     if (!blueLightInit)
+//     {
+//       if (beaconControl(5))
+//         blueLightInit = true;
+//     }
 
-    // Switching modes
-    static uint16_t beaconServoMicros;
-    static bool lockRotating, lockOff;
-    if (blueLightInit)
-    {
-      if (blueLightTrigger && !lockRotating)
-      { // Rotating mode on (1 pulse)
-        if (beaconControl(1))
-        {
-          lockRotating = true;
-          lockOff = false;
-        }
-      }
-      if (!blueLightTrigger && !lockOff && lockRotating)
-      { // Off (4 pulses)
-        if (beaconControl(4))
-        {
-          lockOff = true;
-          lockRotating = false;
-        }
-      }
-    }
-#endif
+//     // Switching modes
+//     static uint16_t beaconServoMicros;
+//     static bool lockRotating, lockOff;
+//     if (blueLightInit)
+//     {
+//       if (blueLightTrigger && !lockRotating)
+//       { // Rotating mode on (1 pulse)
+//         if (beaconControl(1))
+//         {
+//           lockRotating = true;
+//           lockOff = false;
+//         }
+//       }
+//       if (!blueLightTrigger && !lockOff && lockRotating)
+//       { // Off (4 pulses)
+//         if (beaconControl(4))
+//         {
+//           lockOff = true;
+//           lockRotating = false;
+//         }
+//       }
+//     }
+// #endif
 
-    // Trailer coupler (5th wheel) CH4 **********************
-    static uint16_t couplerServoMicros;
-    if (unlock5thWheel)
-      couplerServoMicros = CH4R;
-    else
-      couplerServoMicros = CH4L;
-    mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, couplerServoMicros);
-  }
+//     // Trailer coupler (5th wheel) CH4 **********************
+//     static uint16_t couplerServoMicros;
+//     if (unlock5thWheel)
+//       couplerServoMicros = CH4R;
+//     else
+//       couplerServoMicros = CH4L;
+//     mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, couplerServoMicros);
+//   }
 
-  // Print servo signal debug infos **********************
-  static unsigned long printServoMillis;
-#ifdef SERVO_DEBUG // can slow down the playback loop!
-  if (millis() - printServoMillis > 1000)
-  { // Every 1000ms
-    printServoMillis = millis();
+//   // Print servo signal debug infos **********************
+//   static unsigned long printServoMillis;
+// #ifdef SERVO_DEBUG // can slow down the playback loop!
+//   if (millis() - printServoMillis > 1000)
+//   { // Every 1000ms
+//     printServoMillis = millis();
 
-    Serial.printf("SERVO_DEBUG:\n");
-    Serial.printf("CH1 (steering) :  %i µS, %.2f°\n", steeringServoMicrosDelayed, us2degree(steeringServoMicrosDelayed));
-    Serial.printf("CH2 (shifting) :  %i µS, %.2f°\n", shiftingServoMicros, us2degree(shiftingServoMicros));
+//     Serial.printf("SERVO_DEBUG:\n");
+//     Serial.printf("CH1 (steering) :  %i µS, %.2f°\n", steeringServoMicrosDelayed, us2degree(steeringServoMicrosDelayed));
+//     Serial.printf("CH2 (shifting) :  %i µS, %.2f°\n", shiftingServoMicros, us2degree(shiftingServoMicros));
 
-#if defined MODE2_WINCH
-    Serial.printf("CH3 (winch)    :  %i µS, %f°\n", winchServoMicros, us2degree(winchServoMicros));
-#endif
+// #if defined MODE2_WINCH
+//     Serial.printf("CH3 (winch)    :  %i µS, %f°\n", winchServoMicros, us2degree(winchServoMicros));
+// #endif
 
-#if defined CH3_BEACON
-    Serial.printf("CH3 (beacon)    :  %i µS, %f°\n", beaconServoMicros, us2degree(beaconServoMicros));
-#endif
+// #if defined CH3_BEACON
+//     Serial.printf("CH3 (beacon)    :  %i µS, %f°\n", beaconServoMicros, us2degree(beaconServoMicros));
+// #endif
 
-    Serial.printf("CH4 (5th wheel):  %i µS, %.2f°\n", couplerServoMicros, us2degree(couplerServoMicros));
-    Serial.printf("-------------------------------------\n");
-  }
-#endif // SERVO_DEBUG
+//     Serial.printf("CH4 (5th wheel):  %i µS, %.2f°\n", couplerServoMicros, us2degree(couplerServoMicros));
+//     Serial.printf("-------------------------------------\n");
+//   }
+// #endif // SERVO_DEBUG
 }
 
 //
@@ -3840,14 +3839,14 @@ uint16_t escRampTime;
 // We always need the data up to date, so these comparators are programmed as sub functions!
 int8_t pulse()
 { // Throttle direction
-  int8_t pulse;
-  if (pulseWidth[3] > pulseMaxNeutral[3] && pulseWidth[3] < pulseMaxLimit[3])
-    pulse = 1; // 1 = Forward
-  else if (pulseWidth[3] < pulseMinNeutral[3] && pulseWidth[3] > pulseMinLimit[3])
-    pulse = -1; // -1 = Backwards
-  else
-    pulse = 0; // 0 = Neutral
-  return pulse;
+  // int8_t pulse;
+  // if (pulseWidth[3] > pulseMaxNeutral[3] && pulseWidth[3] < pulseMaxLimit[3])
+  //   pulse = 1; // 1 = Forward
+  // else if (pulseWidth[3] < pulseMinNeutral[3] && pulseWidth[3] > pulseMinLimit[3])
+  //   pulse = -1; // -1 = Backwards
+  // else
+  //   pulse = 0; // 0 = Neutral
+  // return pulse;
 }
 int8_t escPulse()
 { // ESC direction
