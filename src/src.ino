@@ -906,6 +906,8 @@ void IRAM_ATTR fixedPlaybackTimer()
     curKnockCylinder = 0;
   }
 
+  //forcing false dieselKnockTrigger, we dont like this sound
+  dieselKnockTrigger = false;
   if (dieselKnockTrigger)
   {
     dieselKnockTrigger = false;
@@ -1237,8 +1239,8 @@ void setup()
 
   // LED & shaker motor setup (note, that we only have timers from 0 - 15, but 0 - 1 are used for interrupts!)
   headLight.begin(HEADLIGHT_PIN, 15, 20000);           // Timer 15, 20kHz
-  tailLight.begin(TAILLIGHT_PIN, 2, 20000);            // Timer 2, 20kHz
-  indicatorL.begin(INDICATOR_LEFT_PIN, 3, 20000);      // Timer 3, 20kHz 
+  // tailLight.begin(TAILLIGHT_PIN, 2, 20000);            // Timer 2, 20kHz
+  // indicatorL.begin(INDICATOR_LEFT_PIN, 3, 20000);      // Timer 3, 20kHz 
 
   // Refresh sample intervals (important, because MAX_RPM_PERCENTAGE was probably changed above)
   maxSampleInterval = 4000000 / sampleRate;
@@ -1801,14 +1803,14 @@ void engineMassSimulation()
 
 #else // Normal mode ---
     // if ((currentSpeed < clutchEngagingPoint && _currentRpm < maxClutchSlippingRpm) || gearUpShiftingInProgress || gearDownShiftingInProgress || neutralGear || _currentRpm < 200) { // TODO Bug?
-    if ((currentSpeed < clutchEngagingPoint && _currentRpm < maxClutchSlippingRpm) || gearUpShiftingInProgress || gearDownShiftingInProgress || neutralGear)
-    {
-      clutchDisengaged = true;
-    }
-    else
-    {
-      clutchDisengaged = false;
-    }
+    // if ((currentSpeed < clutchEngagingPoint && _currentRpm < maxClutchSlippingRpm) || gearUpShiftingInProgress || gearDownShiftingInProgress || neutralGear)
+    // {
+    //   clutchDisengaged = true;
+    // }
+    // else
+    // {
+    //   clutchDisengaged = false;
+    // }
 
     // Transmissions ***********************************************************************************
 
@@ -1842,7 +1844,7 @@ void engineMassSimulation()
 #if defined VIRTUAL_16_SPEED_SEQUENTIAL
         targetRpm = _currentThrottle;
 #else
-        targetRpm = reMap(curveLinear, _currentThrottle);
+        targetRpm = _currentThrottle;
 
 #endif
       }
@@ -1871,14 +1873,6 @@ void engineMassSimulation()
     if (escIsBraking && currentSpeed < clutchEngagingPoint)
       targetRpm = 0; // keep engine @idle rpm, if braking at very low speed
 
-#if defined LOADER_MODE
-    // If requested hydraulic rpm is higher, use it (for loader)
-    if (targetHydraulicRpm[0] > targetRpm)
-      targetRpm = targetHydraulicRpm[0];
-
-    if (targetRpm > 500)
-      targetRpm = 500;
-#endif      
 
     // Accelerate engine
     if (targetRpm > (_currentRpm + acc) && (_currentRpm + acc) < maxRpm && engineState == RUNNING && engineRunning)
@@ -1929,16 +1923,8 @@ void engineMassSimulation()
     wastegateTrigger = true;
   }
 
-#if defined JAKEBRAKE_ENGINE_SLOWDOWN && defined JAKE_BRAKE_SOUND
-  // Use jake brake to slow down engine while releasing throttle in neutral or during upshifting while applying throttle
-  // for some vehicles like Volvo FH open pipe. See example: https://www.youtube.com/watch?v=MU1iwzl33Zw&list=LL&index=4
-  if (!wastegateTrigger)
-    blowoffMillis = millis();
-  blowoffTrigger = ((gearUpShiftingInProgress || neutralGear) && millis() - blowoffMillis > 20 && millis() - blowoffMillis < 250);
-#endif
-
   lastThrottle = _currentThrottle;
-  Serial.printf("currentThrottle:%i,rpm:%i,freeSze:%i,FreeHp:%i\n", currentThrottle,currentRpm,ESP.getHeapSize(), ESP.getFreeHeap());
+  Serial.printf("currentThrottle:%i,rpm:%i,lassThr:%i,cluth:%i\n", currentThrottle,currentRpm,lastThrottle, clutchDisengaged);
 }
 
 //
