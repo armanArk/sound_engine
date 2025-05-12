@@ -69,11 +69,11 @@
 // #include "vehicles/Chevy468.h" // Chevy 468 big block V8
 
 // EU cars --------
-#include "vehicles/VwBeetle.h" // VW Käfer / Beetle
+// #include "vehicles/VwBeetle.h" // VW Käfer / Beetle
 // #include "vehicles/JaguarXJS.h" // Jaguar XJS V12, manual transmission
 // #include "vehicles/JaguarXJSautomatic.h" // Jaguar XJS V12, automatic transmission
 // #include "vehicles/MGBGtV8.h" // MGB GT V8, manual transmission
-// #include "vehicles/LaFerrari.h" // Ferrari LaFerrari, V12, 6 speed double clutch transmission
+#include "vehicles/LaFerrari.h" // Ferrari LaFerrari, V12, 6 speed double clutch transmission
 // #include "vehicles/LaFerrari_1.h" // Ferrari LaFerrari, V12, 6 speed double clutch transmission
 
 

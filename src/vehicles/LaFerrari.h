@@ -36,7 +36,7 @@ volatile int jakeBrakeMinRpm = 200; // Adjust the min. RPM for the jake brake (a
 
 // Choose the Diesel (or whatever) ignition "knock" sound (played in the fixed sampling rate interrupt, uncomment the one you want,
 // play around here, the results are amazing, if you hit the right combination with the idle sound!) --------
-volatile int dieselKnockVolumePercentage = 200; // Adjust the Diesel knock volume (usually = 200 - 600%) 700
+volatile int dieselKnockVolumePercentage = 150; // Adjust the Diesel knock volume (usually = 200 - 600%) 700
 volatile int dieselKnockIdleVolumePercentage = 0; // Diesel knock volume while no throttle is applied (usually = 20%)
 volatile int dieselKnockStartPoint = 10; // Volume will raise above this throttle input( usually 0, for "open pipe" exhaust about 250)
 volatile int dieselKnockInterval = 12; // Idle sample length divided by this number (1 - 20, depending on sound files)
@@ -51,15 +51,16 @@ uint16_t knockStartRpm = 400; // starting @ this RPM (about 50 - 400)
 //#include "sounds/DieselKnockDummy.h" // Dummy
 #include "sounds/LaFerrariKnock.h" // Ferrari LaFerrari, V12
 
+
 // Adjust the additional turbo sound (set "turboVolumePercentage" to "0", if you don't want it) --------
-volatile int turboVolumePercentage = 0; // Adjust the turbo volume (usually = 70%)
-volatile int turboIdleVolumePercentage = 0; // the turbo volume will be engine rpm dependent (usually = 10%)
+volatile int turboVolumePercentage = 30; // Adjust the turbo volume (usually = 70%)
+volatile int turboIdleVolumePercentage = 20; // the turbo volume will be engine rpm dependent (usually = 10%)
 #include "sounds/TurboWhistle.h" // Turbo sound, playing in parallel with engine sound!
 
 // Adjust the additional supercharger sound (set "chargerVolumePercentage" to "0", if you don't want it) --------
-volatile int chargerVolumePercentage = 0; // Adjust the supercharger volume (usually = 70%)
+volatile int chargerVolumePercentage = 50; // Adjust the supercharger volume (usually = 70%)
 volatile int chargerIdleVolumePercentage = 10; // the supercharger volume will be engine rpm dependent (usually = 10%)
-volatile int chargerStartPoint = 10; // Volume will raise above this point ( usually 10)
+volatile int chargerStartPoint = 50; // Volume will raise above this point ( usually 10)
 #include "sounds/supercharger.h" // supercharger sound, playing in parallel with engine sound!
 
 // Adjust the additional turbo wastegate  / blowoff valve  sound (set "wastegateVolumePercentage" to "0", if you don't want it)--------
@@ -68,6 +69,7 @@ volatile int wastegateIdleVolumePercentage = 1; // Wastegate sound is played, af
 #include "sounds/WastegateDummy.h"
 //#include "sounds/UnimogU1000TurboWastegate.h"
 //#include "sounds/ScaniaR730V8TurboWastegate.h"
+
 
 // Adjust the additional cooling fan sound (set "fanVolumePercentage" to "0", if you don't want it) --------
 volatile int fanVolumePercentage = 0; // Adjust the fan volume (250% for Tatra 813, else 0%)
@@ -162,7 +164,7 @@ const uint8_t escBrakeSteps = 30; // determines, how fast the ESC is able to bra
 const uint8_t escAccelerationSteps = 3; // determines, how fast the ESC is able to accelerate (2 - 3, 3 for King Hauler)
 
 // Gearbox parameters ---------------------------------------------------------------------------------------------------
-const boolean automatic = false; // false = linear rpm curve, true = automatic transmission with torque converter is simulated (use it, if you don't have a real shifting transmission)
+const boolean automatic = true; // false = linear rpm curve, true = automatic transmission with torque converter is simulated (use it, if you don't have a real shifting transmission)
 #define NumberOfAutomaticGears 6 // <<------- Select 3, 4 or 6 gears!
 const boolean doubleClutch = false; // do not activate it at the same time as automatic!
 const boolean shiftingAutoThrottle = false; // For Tamiya 3 speed tansmission, throttle is altered for synchronizing, if "true"

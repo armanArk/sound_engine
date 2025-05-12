@@ -1,7 +1,7 @@
 char codeVersion[] = "9.13.0"; // Software revision.
 
 #include <Arduino.h>
-#include "0_GeneralSettings.h" 
+#include "0_GeneralSettings.h"
 #include "1_Vehicle.h"         
 #include "2_Remote.h"          
 #include "3_ESC.h"             
@@ -9,7 +9,7 @@ char codeVersion[] = "9.13.0"; // Software revision.
 #include "5_Shaker.h"          
 #include "6_Lights.h"          
 #include "7_Servos.h"          
-#include "8_Sound.h"           
+#include "8_Sound.h"
 #include "9_Dashboard.h"       
 #include "10_Trailer.h"        
 
@@ -70,11 +70,6 @@ void serialInterface();
 
 #define BATTERY_DETECT_PIN 39 // Voltage divider resistors connected to pin "VN & GND"
 
-#define STEERING_PIN 13 // CH1 output for steering servo (bus communication only)
-#define SHIFTING_PIN 12 // CH2 output for shifting servo (bus communication only)
-#define WINCH_PIN 14    // CH3 output for winch servo (bus communication only)
-#define COUPLER_PIN 27  // CH4 output for coupler (5th. wheel) servo (bus communication only)
-
 #ifdef WEMOS_D1_MINI_ESP32 // switching headlight pin depending on the board variant
 #define HEADLIGHT_PIN 22   // Headlights connected to GPIO 22
 #define CABLIGHT_PIN -1    // No Cabin lights
@@ -83,15 +78,6 @@ void serialInterface();
 #define CABLIGHT_PIN 22 // Cabin lights connected to GPIO 22
 #endif
 
-#define TAILLIGHT_PIN 15       // Red tail- & brake-lights (combined)
-#define INDICATOR_LEFT_PIN 2   // Orange left indicator (turn signal) light
-#define INDICATOR_RIGHT_PIN 4  // Orange right indicator (turn signal) light
-#define FOGLIGHT_PIN 16        // (16 = RX2) Fog lights
-#define REVERSING_LIGHT_PIN 17 // (TX2) White reversing light
-#define ROOFLIGHT_PIN 5        // Roof lights (high beam, if "define SEPARATE_FULL_BEAM")
-#define SIDELIGHT_PIN 18       // Side lights (connect roof ligthts here, if "define SEPARATE_FULL_BEAM")
-#define BEACON_LIGHT2_PIN 19   // Blue beacons light
-#define BEACON_LIGHT1_PIN 21   // Blue beacons light
 
 #ifdef NEOPIXEL_ON_CH4           // Switching NEOPIXEL pin for WS2812 LED depending on setting
 #define RGB_LEDS_PIN COUPLER_PIN // Use coupler pin on CH4
@@ -330,10 +316,7 @@ volatile boolean escIsDriving = false; // ESC is in a driving state
 volatile boolean escInReverse = false; // ESC is driving or braking backwards
 volatile boolean brakeDetect = false;  // Additional brake detect signal, enabled immediately, if brake applied
 int8_t driveState = 0;                 // for ESC state machine
-uint16_t escPulseMax = 2000;           // ESC calibration variables (values will be changed later)
-uint16_t escPulseMin = 1000;
-uint16_t escPulseMaxNeutral = 1500;
-uint16_t escPulseMinNeutral = 1500;
+ 
 uint16_t currentSpeed = 0;         // 0 - 500 (current ESC power)
 volatile bool crawlerMode = false; // Crawler mode intended for crawling competitons (withouth sound and virtual inertia)
 boolean cannonFlash = false;                   // Flashing cannon fire
@@ -1112,17 +1095,10 @@ void IRAM_ATTR fixedPlaybackTimer()
   c = c1 + c2 + c3;                                            // Excavator sounds
   d = d1 + d2;                                                 // Additional sounds
 
-  // DAC output (groups mixed together) ****************************************************************************
-
-  // dacWrite(DAC2, constrain(((a * 8 / 10) + (b * 2 / 10) + c + d) * masterVolume / 100 + dacOffset, 0, 255)); // Mix signals, add 128 offset, write result to DAC
-  //  dacWrite(DAC2, constrain( a2 * masterVolume / 100 + dacOffset, 0, 255)); // Mix signals, add 128 offset, write result to DAC
-  //  dacWrite(DAC2, 0);
-
   // Direct DAC access is faster according to: https://forum.arduino.cc/t/esp32-dacwrite-ersetzen/653954/5
   uint8_t value = constrain(((a * 8 / 10) + (b * 2 / 10) + c + d) * masterVolume / 100 + dacOffset, 0, 255);
   SET_PERI_REG_BITS(RTC_IO_PAD_DAC2_REG, RTC_IO_PDAC2_DAC, value, RTC_IO_PDAC2_DAC_S);
-
-  // portEXIT_CRITICAL_ISR(&fixedTimerMux);
+ 
 }
 
 //
@@ -1236,13 +1212,7 @@ void setup()
     if ((xRpmSemaphore) != NULL)
       xSemaphoreGive((xRpmSemaphore)); // Make the RPM variable available for use, by "Giving" the Semaphore.
   } 
-
-  // LED & shaker motor setup (note, that we only have timers from 0 - 15, but 0 - 1 are used for interrupts!)
   headLight.begin(HEADLIGHT_PIN, 15, 20000);           // Timer 15, 20kHz
-  // tailLight.begin(TAILLIGHT_PIN, 2, 20000);            // Timer 2, 20kHz
-  // indicatorL.begin(INDICATOR_LEFT_PIN, 3, 20000);      // Timer 3, 20kHz 
-
-  // Refresh sample intervals (important, because MAX_RPM_PERCENTAGE was probably changed above)
   maxSampleInterval = 4000000 / sampleRate;
   minSampleInterval = 4000000 / sampleRate * 100 / MAX_RPM_PERCENTAGE;
 
@@ -1301,236 +1271,6 @@ void dacOffsetFade()
   }
 }
 
-//
-// =======================================================================================================
-// READ PWM RC SIGNALS (plug in your channels according to order in "channelSetup.h")
-// =======================================================================================================
-//
-
-void readPwmSignals()
-{
-
-  static uint32_t lastFrameTime = millis();
-
-  if (millis() - lastFrameTime > 20)
-  { 
-    
-    if (xSemaphoreTake(xPwmSemaphore, portMAX_DELAY))
-    { 
-      xSemaphoreGive(xPwmSemaphore); // Now free or "Give" the semaphore for others.
-    }
-
-    // Normalize, auto zero and reverse channels
-    processRawChannels();
-
-    lastFrameTime = millis();
-  }
-  else
-  {
-    xSemaphoreGive(xPwmSemaphore); // Free or "Give" the semaphore for others, if not required!
-  }
-}
-
-
-//
-// =======================================================================================================
-// PROCESS CHANNELS (Normalize, auto zero and reverse)
-// =======================================================================================================
-//
-
-void processRawChannels()
-{
-
-  static unsigned long lastOutOfRangeMillis;
-  static int channel;
-  static bool exThrottlePrint;
-  static bool exSteeringPrint;
-
-#ifdef TRACKED_MODE // If tracked mode: enable CH2 auto zero adjustment as well, if it is enabled for CH3
-  if (channelAutoZero[3])
-    channelAutoZero[2] = true;
-#endif
-
-#ifdef AIRPLANE_MODE // If airplane mode: always disable CH3 auto zero adjustment
-  channelAutoZero[3] = false;
-#endif
-
-  if (millis() - lastOutOfRangeMillis > 500)
-  {
-    for (uint8_t i = 1; i < PULSE_ARRAY_SIZE; i++)
-    { // For each channel:
-
-      // Position valid for auto calibration? Must be between 1400 and 1600 microseconds
-      if (channelAutoZero[i] && !autoZeroDone && (pulseWidthRaw[i] > 1600 || pulseWidthRaw[i] < 1400))
-      {
-        channel = i;
-        Serial.printf(" CH%i: signal out of auto calibration range, check transmitter & receiver!\n", channel);
-        channelZero();
-        lastOutOfRangeMillis = millis();
-        i--;
-        return;
-      }
-
-      // Exponential throttle compensation ------------------
-#ifdef EXPONENTIAL_THROTTLE
-      if (!exThrottlePrint)
-      {
-        Serial.printf("EXPONENTIAL_THROTTLE mode enabled\n");
-        exThrottlePrint = true;
-      }
-      if (i == 3)
-      { // Throttle CH only
-        pulseWidthRaw2[i] = reMap(curveExponentialThrottle, pulseWidthRaw[i]);
-      }
-      else
-      {
-        pulseWidthRaw2[i] = pulseWidthRaw[i];
-      }
-#else
-      pulseWidthRaw2[i] = pulseWidthRaw[i];
-#endif // --------------------------------------------------
-
-      // Exponential steering compensation ------------------
-#ifdef EXPONENTIAL_STEERING
-      if (!exSteeringPrint)
-      {
-        Serial.printf("EXPONENTIAL_STEERING mode enabled\n");
-        exSteeringPrint = true;
-      }
-      if (i == 1)
-      { // Throttle CH only
-        pulseWidthRaw2[i] = reMap(curveExponentialThrottle, pulseWidthRaw[i]);
-      }
-      else
-      {
-        pulseWidthRaw2[i] = pulseWidthRaw[i];
-      }
-#else
-      pulseWidthRaw2[i] = pulseWidthRaw[i];
-#endif // --------------------------------------------------
-
-      // Take channel raw data, reverse them, if required and store them
-      if (channelReversed[i])
-        pulseWidthRaw3[i] = map(pulseWidthRaw2[i], 0, 3000, 3000, 0); // Reversed
-      else
-        pulseWidthRaw3[i] = pulseWidthRaw2[i]; // Not reversed
-
-      // Calculate zero offset (only within certain absolute range)
-      if (channelAutoZero[i] && !autoZeroDone && pulseWidthRaw3[i] > pulseMinValid && pulseWidthRaw3[i] < pulseMaxValid)
-        pulseOffset[i] = 1500 - pulseWidthRaw3[i];
-
-      // Center channel, if out of range!
-      if (pulseWidthRaw3[i] > pulseMaxValid || pulseWidthRaw3[i] < pulseMinValid)
-        pulseWidthRaw3[i] = pulseZero[i];
-
-      // Limit channel, if out of range (required for RGT  MT-350 @ max. throttle dual rate)
-      if (pulseWidthRaw3[i] > 2000)
-        pulseWidthRaw3[i] = 2000;
-      if (pulseWidthRaw3[i] < 1000)
-        pulseWidthRaw3[i] = 1000;
-
-      // Compensate pulsewidth with auto zero offset
-      pulseWidthRaw3[i] += pulseOffset[i];
-      if (!autoZeroDone)
-      { // Print offsets, if switching on the controller
-        if (i == 1)
-          Serial.printf("\nTransmitter channel offsets (calculated, if channelAutoZero[] = true):\n");
-        if (channelAutoZero[i])
-          Serial.printf(" CH%i: %i µs\n", i, pulseOffset[i]);
-      }
-
-      // Set auto zero done flag
-      if (i == PULSE_ARRAY_SIZE - 1)
-        autoZeroDone = true;
-    }
-  }
-
-  if (!autoZeroDone)
-  {                                           // Indicators are showing the number of channels, which are out of auto calibration range
-    indicatorL.flash(140, 150, 500, channel); // ON, OFF, PAUSE, PULSES, (OPTIONAL DELAY FOR FIRST PASS)
-    indicatorR.flash(140, 150, 500, channel);
-  }
-
-#if defined CHANNEL_AVERAGING // --------------------------------------------------------------------------------
-  uint16_t n = 4;             // 2 - 4 !
-  static bool initDone = false;
-  static uint32_t smoothed[PULSE_ARRAY_SIZE];
-  static unsigned long averagingMillis = millis();
-
-  if (millis() - averagingMillis > 15)
-  { // Every 15ms (SBUS packets are coming in every 14ms)
-    averagingMillis = millis();
-    for (uint8_t i = 1; i < PULSE_ARRAY_SIZE; i++)
-    { // With averaging -----
-      if (initDone)
-      {
-        smoothed[i] = (smoothed[i] * (n - 1) + pulseWidthRaw3[i]) / n;
-        pulseWidth[i] = smoothed[i];
-      }
-      else
-      {
-        smoothed[i] = pulseWidthRaw3[i];
-        pulseWidth[i] = pulseWidthRaw3[i];
-        if (i >= PULSE_ARRAY_SIZE - 1)
-          initDone = true;
-      }
-    }
-  }
-#else // Without averaging -----
-  for (uint8_t i = 1; i < PULSE_ARRAY_SIZE; i++)
-  {
-    pulseWidth[i] = pulseWidthRaw3[i];
-  }
-#endif
-
-  // Print input signal debug infos -----------------------------------------------------------------------------
-#ifdef CHANNEL_DEBUG // can slow down the playback loop!
-  static unsigned long printChannelMillis;
-  if (millis() - printChannelMillis > 1000 && autoZeroDone)
-  { // Every 1000ms
-    printChannelMillis = millis();
-
-    Serial.printf("CHANNEL_DEBUG:\n");
-    for (uint8_t channelNum = 1; channelNum < PULSE_ARRAY_SIZE; channelNum++)
-    {
-      Serial.printf(" CH%i: %i µs\n", channelNum, pulseWidth[channelNum]);
-    }
-    Serial.printf("Throttle: %i/%i\n", currentThrottle, maxRpm);
-    Serial.printf("States:\n");
-    Serial.printf(" MODE1:            %s\n", mode1 ? "true" : "false");
-    Serial.printf(" MODE2:            %s\n", mode2 ? "true" : "false");
-    Serial.printf(" MOMENTARY1:       %s\n", momentary1 ? "true" : "false");
-    Serial.printf(" HAZARDS:          %s\n", hazard ? "true" : "false");
-    Serial.printf(" INDICATOR_LEFT:   %s\n", indicatorLon ? "true" : "false");
-    Serial.printf(" INDICATOR_RIGHT:  %s\n", indicatorRon ? "true" : "false");
-#if not defined EMBEDDED_SBUS // ------------------------
-    Serial.printf(" SBUS Failsafe:    %s\n", SBUSfailSafe ? "true" : "false");
-    Serial.printf(" SBUS Lost frames: %s\n", SBUSlostFrame ? "true" : "false");
-#endif // -----------------------------------------------
-    Serial.printf(" Failsafe state:   %s\n", failSafe ? "true" : "false");
-    Serial.printf("Misc:\n");
-    Serial.printf(" MAX_RPM_PERCENTAGE: %i\n", MAX_RPM_PERCENTAGE);
-    Serial.printf(" loopTime:           %i\n", loopTime);
-    Serial.printf("-----------------------------------\n");
-  }
-#endif // CHANNEL_DEBUG
-}
-
-// Sub function for channel centering ----
-void channelZero()
-{
-  for (uint8_t i = 1; i < PULSE_ARRAY_SIZE; i++)
-  {
-    pulseWidth[i] = 1500;
-  }
-}
-
-//
-// =======================================================================================================
-// DISABLE INTERRUPTS
-// =======================================================================================================
-//
-
 // it is required to disable interrupts prior to EEPROM access!
 void disableAllInterrupts()
 {
@@ -1539,40 +1279,6 @@ void disableAllInterrupts()
   timerDetachInterrupt(fixedTimer);
 
   Serial.print("Interrupts disabled, reboot required!\n");
-}
-
-//
-// =======================================================================================================
-// EEPROM
-// =======================================================================================================
-//
-
-// Write string to EEPROM ------
-// https://roboticsbackend.com/arduino-write-string-in-eeprom/#Write_the_String
-
-int writeStringToEEPROM(int addrOffset, const String &strToWrite)
-{
-  byte len = strToWrite.length();
-  EEPROM.write(addrOffset, len);
-  for (int i = 0; i < len; i++)
-  {
-    EEPROM.write(addrOffset + 1 + i, strToWrite[i]);
-  }
-  return addrOffset + 1 + len;
-}
-
-// Read string from EEPROM ------
-int readStringFromEEPROM(int addrOffset, String *strToRead)
-{
-  int newStrLen = EEPROM.read(addrOffset);
-  char data[newStrLen + 1];
-  for (int i = 0; i < newStrLen; i++)
-  {
-    data[i] = EEPROM.read(addrOffset + 1 + i);
-  }
-  data[newStrLen] = '\0';
-  *strToRead = String(data);
-  return addrOffset + 1 + newStrLen;
 }
 
 // Erase EEPROM ------
@@ -1609,94 +1315,61 @@ void eepromDebugRead()
   
 }
 
-//
-// =======================================================================================================
-// SERIAL INTERFACE
-// =======================================================================================================
-//
 
 #include "src/serialInterface.h" // Serial command interface for configuration
 
-//
-// =======================================================================================================
-// MAP PULSEWIDTH TO THROTTLE CH3
-// =======================================================================================================
-//
-
 void mapThrottle()
 {
-currentThrottle = map(analogRead(35),0,3900,0,500);
-  // Auto throttle --------------------------------------------------------------------------
-#if not defined EXCAVATOR_MODE
-  // Auto throttle while gear shifting (synchronizing the Tamiya 3 speed gearbox)
-  if (!escIsBraking && escIsDriving && shiftingAutoThrottle && !automatic && !doubleClutch)
-  {
-    if (gearUpShiftingInProgress && !doubleClutchInProgress)
-      currentThrottle = 0; // No throttle
-    if (gearDownShiftingInProgress || doubleClutchInProgress)
-      currentThrottle = 500;                              // Full throttle
-    currentThrottle = constrain(currentThrottle, 0, 500); // Limit throttle range
-  }
-#endif
-  
+
+  currentThrottle = map(analogRead(35),0,3900,0,500);
 
   // As a base for some calculations below, fade the current throttle to make it more natural
   static unsigned long throttleFaderMicros;
-  static boolean blowoffLock;
+  // static boolean blowoffLock; // blowoffLock seems unused here, consider removing if truly unused globally
   if (micros() - throttleFaderMicros > 500)
   { // Every 0.5ms
     throttleFaderMicros = micros();
 
-    if (currentThrottleFaded < currentThrottle && !escIsBraking && currentThrottleFaded < 499)
+    // Fade currentThrottle for smoother volume transitions
+    if (currentThrottleFaded < currentThrottle && currentThrottleFaded < 499) // Removed: !escIsBraking 
       currentThrottleFaded += 2;
-    if ((currentThrottleFaded > currentThrottle || escIsBraking) && currentThrottleFaded > 2)
+    if (currentThrottleFaded > currentThrottle && currentThrottleFaded > 2) // Removed: || escIsBraking
       currentThrottleFaded -= 2;
+    currentThrottleFaded = constrain(currentThrottleFaded, 0, 500);
+
 
     // Calculate throttle dependent engine idle volume
-    if (!escIsBraking && !brakeDetect && engineRunning)
+    // Simplified: if engine is running, volume depends on faded throttle
+    if (engineRunning) 
       throttleDependentVolume = map(currentThrottleFaded, 0, 500, engineIdleVolumePercentage, fullThrottleVolumePercentage);
-    // else throttleDependentVolume = engineIdleVolumePercentage; // TODO
     else
-    {
-      if (throttleDependentVolume > engineIdleVolumePercentage)
-        throttleDependentVolume--;
-      else
-        throttleDependentVolume = engineIdleVolumePercentage;
-    }
+      throttleDependentVolume = engineIdleVolumePercentage; // Or 0 if preferred when engine is off
+
 
     // Calculate throttle dependent engine rev volume
-    if (!escIsBraking && !brakeDetect && engineRunning)
+    if (engineRunning)
       throttleDependentRevVolume = map(currentThrottleFaded, 0, 500, engineRevVolumePercentage, fullThrottleVolumePercentage);
-    // else throttleDependentRevVolume = engineRevVolumePercentage; // TODO
     else
-    {
-      if (throttleDependentRevVolume > engineRevVolumePercentage)
-        throttleDependentRevVolume--;
-      else
-        throttleDependentRevVolume = engineRevVolumePercentage;
-    }
+      throttleDependentRevVolume = engineRevVolumePercentage; // Or 0
+
 
     // Calculate throttle dependent Diesel knock volume
-    if (!escIsBraking && !brakeDetect && engineRunning && (currentThrottleFaded > dieselKnockStartPoint))
+    // Simplified: if engine running and throttle above a point, map knock volume
+    if (engineRunning && (currentThrottleFaded > dieselKnockStartPoint))
       throttleDependentKnockVolume = map(currentThrottleFaded, dieselKnockStartPoint, 500, dieselKnockIdleVolumePercentage, 100);
-    // else throttleDependentKnockVolume = dieselKnockIdleVolumePercentage;
     else
-    {
-      if (throttleDependentKnockVolume > dieselKnockIdleVolumePercentage)
-        throttleDependentKnockVolume--;
-      else
-        throttleDependentKnockVolume = dieselKnockIdleVolumePercentage;
-    }
+      throttleDependentKnockVolume = dieselKnockIdleVolumePercentage;
+
 
     // Calculate engine rpm dependent jake brake volume
     if (engineRunning)
       rpmDependentJakeBrakeVolume = map(currentRpm, 0, 500, jakeBrakeIdleVolumePercentage, 100);
     else
-      rpmDependentJakeBrakeVolume = jakeBrakeIdleVolumePercentage;
+      rpmDependentJakeBrakeVolume = jakeBrakeIdleVolumePercentage; // Or 0
 
 #if defined RPM_DEPENDENT_KNOCK // knock volume also depending on engine rpm
     // Calculate RPM dependent Diesel knock volume
-    if (currentRpm > 400)
+    if (currentRpm > knockStartRpm) // ensure knockStartRpm is defined and sensible
       rpmDependentKnockVolume = map(currentRpm, knockStartRpm, 500, minKnockVolumePercentage, 100);
     else
       rpmDependentKnockVolume = minKnockVolumePercentage;
@@ -1706,65 +1379,39 @@ currentThrottle = map(analogRead(35),0,3900,0,500);
     if (engineRunning)
       throttleDependentTurboVolume = map(currentRpm, 0, 500, turboIdleVolumePercentage, 100);
     else
-      throttleDependentTurboVolume = turboIdleVolumePercentage;
+      throttleDependentTurboVolume = turboIdleVolumePercentage; // Or 0
 
     // Calculate engine rpm dependent cooling fan volume
     if (engineRunning && (currentRpm > fanStartPoint))
       throttleDependentFanVolume = map(currentRpm, fanStartPoint, 500, fanIdleVolumePercentage, 100);
     else
-      throttleDependentFanVolume = fanIdleVolumePercentage;
+      throttleDependentFanVolume = fanIdleVolumePercentage; // Or 0
 
     // Calculate throttle dependent supercharger volume
-    if (!escIsBraking && !brakeDetect && engineRunning && (currentRpm > chargerStartPoint))
-      throttleDependentChargerVolume = map(currentThrottleFaded, chargerStartPoint, 500, chargerIdleVolumePercentage, 100);
+    // Original used currentRpm > chargerStartPoint AND throttle. For pot mode, currentRpm is more direct.
+    if (engineRunning && (currentRpm > chargerStartPoint)) 
+      throttleDependentChargerVolume = map(currentRpm, chargerStartPoint, 500, chargerIdleVolumePercentage, 100); // Changed from currentThrottleFaded
     else
-      throttleDependentChargerVolume = chargerIdleVolumePercentage;
+      throttleDependentChargerVolume = chargerIdleVolumePercentage; // Or 0
 
     // Calculate engine rpm dependent wastegate volume
     if (engineRunning)
       rpmDependentWastegateVolume = map(currentRpm, 0, 500, wastegateIdleVolumePercentage, 100);
     else
-      rpmDependentWastegateVolume = wastegateIdleVolumePercentage;
+      rpmDependentWastegateVolume = wastegateIdleVolumePercentage; // Or 0
   }
 
-  // Calculate engine load (used for torque converter slip simulation)
+  // Calculate engine load (used for torque converter slip simulation, but also for sound character)
   engineLoad = currentThrottle - currentRpm;
 
-  if (engineLoad < 0 || escIsBraking || brakeDetect)
-    engineLoad = 0; // Range is 0 - 180
-  if (engineLoad > 180)
-    engineLoad = 180;
+  if (engineLoad < 0) // Removed: || escIsBraking || brakeDetect
+    engineLoad = 0; 
+  engineLoad = constrain(engineLoad, 0, 180); // Keep constrain, original range was 0-180
 
-  // Additional sounds volumes -----------------------------
-
-  // Tire squealing ----
-  uint8_t steeringAngle = 0;
-  uint8_t brakeSquealVolume = 0;
-
-  // Cornering squealing
-  if (pulseWidth[1] < 1500)
-    steeringAngle = map(pulseWidth[1], 1000, 1500, 100, 0);
-  else if (pulseWidth[1] > 1500)
-    steeringAngle = map(pulseWidth[1], 1500, 2000, 0, 100);
-  else
-    steeringAngle = 0;
-
-  tireSquealVolume = steeringAngle * currentSpeed * currentSpeed / 125000; // Volume = steering angle * speed * speed
-
-  // Brake squealing
-  if ((driveState == 2 || driveState == 4) && currentSpeed > 50 && currentThrottle > 250)
-  {
-    tireSquealVolume += map(currentThrottle, 250, 500, 0, 100);
-  }
-
-  tireSquealVolume = constrain(tireSquealVolume, 0, 100);
+  tireSquealVolume = 0; // Simplification for now
+  // tireSquealVolume = constrain(tireSquealVolume, 0, 100);
 }
 
-//
-// =======================================================================================================
-// ENGINE MASS SIMULATION (running on core 0)
-// =======================================================================================================
-//
 
 void engineMassSimulation()
 {
@@ -1773,7 +1420,7 @@ void engineMassSimulation()
   static int32_t _currentRpm = 0;       // Private current RPM (to prevent conflict with core 1)
   static int32_t _currentThrottle = 0;
   static int32_t lastThrottle;
-  uint16_t converterSlip;
+  // uint16_t converterSlip; // No longer needed for potentiometer mode
   static unsigned long throtMillis;
   static unsigned long wastegateMillis;
   static unsigned long blowoffMillis;
@@ -1785,7 +1432,7 @@ void engineMassSimulation()
   timeBase = 2;
 #endif
 
-  _currentThrottle = currentThrottle;
+  _currentThrottle = currentThrottle; // currentThrottle is now from potentiometer via mapThrottle()
 
   if (millis() - throtMillis > timeBase)
   { // Every 2 or 6ms
@@ -1793,99 +1440,26 @@ void engineMassSimulation()
 
     if (_currentThrottle > 500)
       _currentThrottle = 500;
+    if (_currentThrottle < 0) // Ensure throttle doesn't go negative
+      _currentThrottle = 0;
 
-      // Virtual clutch **********************************************************************************
-#if defined EXCAVATOR_MODE // Excavator mode ---
-    clutchDisengaged = true;
 
-    targetRpm = _currentThrottle - hydraulicLoad;
-    targetRpm = constrain(targetRpm, 0, 500);
+    // For pure potentiometer mode, targetRpm is directly what the throttle requests.
+    // You can use a direct mapping or a curve if desired.
+    // Using reMap with curveLinear is a good general approach.
+    targetRpm = reMap(curveLinear, _currentThrottle);
+    targetRpm = constrain(targetRpm, minRpm, maxRpm);
 
-#else // Normal mode ---
-    // if ((currentSpeed < clutchEngagingPoint && _currentRpm < maxClutchSlippingRpm) || gearUpShiftingInProgress || gearDownShiftingInProgress || neutralGear || _currentRpm < 200) { // TODO Bug?
-    // if ((currentSpeed < clutchEngagingPoint && _currentRpm < maxClutchSlippingRpm) || gearUpShiftingInProgress || gearDownShiftingInProgress || neutralGear)
-    // {
-    //   clutchDisengaged = true;
-    // }
-    // else
-    // {
-    //   clutchDisengaged = false;
-    // }
 
-    // Transmissions ***********************************************************************************
-
-    // automatic transmission ----
-    if (automatic)
-    {
-      // Torque converter slip calculation
-      if (selectedAutomaticGear < 2)
-        converterSlip = engineLoad * torqueconverterSlipPercentage / 100 * 2; // more slip in first and reverse gear
-      else
-        converterSlip = engineLoad * torqueconverterSlipPercentage / 100;
-
-      if (!neutralGear)
-        targetRpm = currentSpeed * gearRatio[selectedAutomaticGear] / 10 + converterSlip; // Compute engine RPM
-      else
-        targetRpm = reMap(curveLinear, _currentThrottle);
-    }
-    else if (doubleClutch)
-    {
-      // double clutch transmission
-      if (!neutralGear)
-        targetRpm = currentSpeed * gearRatio[selectedAutomaticGear] / 10; // Compute engine RPM
-      else
-        targetRpm = reMap(curveLinear, _currentThrottle);
-    }
-    else
-    {
-      // Manual transmission ----
-      if (clutchDisengaged)
-      { // Clutch disengaged: Engine revving allowed
-#if defined VIRTUAL_16_SPEED_SEQUENTIAL
-        targetRpm = _currentThrottle;
-#else
-        targetRpm = _currentThrottle;
-
-#endif
-      }
-      else
-      { // Clutch engaged: Engine rpm synchronized with ESC power (speed)
-
-#if defined VIRTUAL_3_SPEED || defined VIRTUAL_16_SPEED_SEQUENTIAL // Virtual 3 speed or sequential 16 speed transmission
-        targetRpm = reMap(curveLinear, (currentSpeed * virtualManualGearRatio[selectedGear] / 10)); // Add virtual gear ratios
-        if (targetRpm > 500)
-          targetRpm = 500;
-
-          // targetRpm = currentSpeed * virtualManualGearRatio[selectedGear] / 10; // TODO, reMap not working in VIRTUAL_3_SPEED mode???
-
-#elif defined STEAM_LOCOMOTIVE_MODE
-        targetRpm = currentSpeed;
-
-#else // Real 3 speed transmission
-        targetRpm = reMap(curveLinear, currentSpeed);
-#endif
-      }
-    }
-#endif
-
-    // Engine RPM **************************************************************************************
-
-    if (escIsBraking && currentSpeed < clutchEngagingPoint)
-      targetRpm = 0; // keep engine @idle rpm, if braking at very low speed
-
+    // Engine RPM Acceleration / Deceleration (Core Inertia Simulation) **********************************
 
     // Accelerate engine
     if (targetRpm > (_currentRpm + acc) && (_currentRpm + acc) < maxRpm && engineState == RUNNING && engineRunning)
     {
-      if (!airBrakeTrigger)
-      { // No acceleration, if brake release noise still playing
-        if (!gearDownShiftingInProgress)
-          _currentRpm += acc;
-        else
-          _currentRpm += acc / 2; // less aggressive rpm rise while downshifting
-        if (_currentRpm > maxRpm)
-          _currentRpm = maxRpm;
-      }
+      // Removed: if (!airBrakeTrigger) - assuming less complexity for pot mode
+      _currentRpm += acc;
+      if (_currentRpm > maxRpm)
+        _currentRpm = maxRpm;
     }
 
     // Decelerate engine
@@ -1896,35 +1470,51 @@ void engineMassSimulation()
         _currentRpm = minRpm;
     }
 
-#if (defined VIRTUAL_3_SPEED || defined VIRTUAL_16_SPEED_SEQUENTIAL) and not defined STEAM_LOCOMOTIVE_MODE
-    // Limit top speed, depending on manual gear ratio. Ensures, that the engine will not blow up!
-    if (!automatic && !doubleClutch)
-      speedLimit = maxRpm * 10 / virtualManualGearRatio[selectedGear];
-#endif
+    // Speed (sample rate) output for sound generation - THIS IS CRITICAL
+    engineSampleRate = map(_currentRpm, minRpm, maxRpm, maxSampleInterval, minSampleInterval); 
 
-    // Speed (sample rate) output
-    engineSampleRate = map(_currentRpm, minRpm, maxRpm, maxSampleInterval, minSampleInterval); // Idle
-
-    // if ( xSemaphoreTake( xRpmSemaphore, portMAX_DELAY ) )
+    // Update global currentRpm
+    // if ( xSemaphoreTake( xRpmSemaphore, portMAX_DELAY ) ) // Already handled in Task1code
     //{
     currentRpm = _currentRpm;
-    // xSemaphoreGive( xRpmSemaphore ); // Now free or "Give" the semaphore for others.
+    // xSemaphoreGive( xRpmSemaphore ); 
     // }
   }
 
-  // Prevent Wastegate from being triggered while downshifting
-  if (gearDownShiftingInProgress)
-    wastegateMillis = millis();
+  // Optional: Wastegate/Blowoff based on throttle changes.
+  // This can add some character even in potentiometer mode.
+  // If you don't want this, you can remove this section.
+
+  // Prevent Wastegate from being triggered while downshifting (less relevant here but kept for structure)
+  // if (gearDownShiftingInProgress) // gearDownShiftingInProgress no longer relevant for pot mode
+  //   wastegateMillis = millis();
 
   // Trigger Wastegate, if throttle rapidly dropped
-  if (lastThrottle - _currentThrottle > 70 && !escIsBraking && millis() - wastegateMillis > 1000)
+  if (lastThrottle - _currentThrottle > 70 && millis() - wastegateMillis > 1000) // Removed: !escIsBraking
   {
     wastegateMillis = millis();
     wastegateTrigger = true;
   }
 
+#if defined JAKEBRAKE_ENGINE_SLOWDOWN && defined JAKE_BRAKE_SOUND
+  // This logic might still be desirable if you rapidly drop the potentiometer
+  // if (!wastegateTrigger) // This condition might be too restrictive now
+  //   blowoffMillis = millis();
+  // blowoffTrigger = ((/*gearUpShiftingInProgress || neutralGear - no longer relevant*/) && millis() - blowoffMillis > 20 && millis() - blowoffMillis < 250);
+  // Simplified blowoff for pot mode: if throttle drops fast, trigger it.
+  // This is a very simplified version and might need tuning or different logic.
+  if (lastThrottle - _currentThrottle > 150 && !wastegateTrigger && millis() - blowoffMillis > 500) { // Adjusted threshold and timing
+      blowoffMillis = millis();
+      blowoffTrigger = true;
+  } else if (millis() - blowoffMillis > 250) { // Auto-reset blowoff trigger
+      blowoffTrigger = false;
+  }
+
+#endif
+
   lastThrottle = _currentThrottle;
-  Serial.printf("currentThrottle:%i,rpm:%i,lassThr:%i,cluth:%i\n", currentThrottle,currentRpm,lastThrottle, clutchDisengaged);
+  // Removed the debug print from here as you have one in loop() or mapThrottle()
+  Serial.printf("currentThrottle:%i,rpm:%i,lassThr:%i,35:%i\n", currentThrottle,currentRpm,lastThrottle,analogRead(35));
 }
 
 //
@@ -2226,36 +1816,6 @@ void automaticGearSelector()
   }
 }
 
-//
-// =======================================================================================================
-// ESC CONTROL (including optional battery protection)
-// =======================================================================================================
-//
-
-// ESC sub functions =============================================
-// We always need the data up to date, so these comparators are programmed as sub functions!
-int8_t pulse()
-{ // Throttle direction
-  // int8_t pulse;
-  // if (pulseWidth[3] > pulseMaxNeutral[3] && pulseWidth[3] < pulseMaxLimit[3])
-  //   pulse = 1; // 1 = Forward
-  // else if (pulseWidth[3] < pulseMinNeutral[3] && pulseWidth[3] > pulseMinLimit[3])
-  //   pulse = -1; // -1 = Backwards
-  // else
-  //   pulse = 0; // 0 = Neutral
-  // return pulse;
-}
-int8_t escPulse()
-{ // ESC direction
-  // int8_t escPulse;
-  // if (escPulseWidth > pulseMaxNeutral[3] && escPulseWidth < pulseMaxLimit[3])
-  //   escPulse = 1; // 1 = Forward
-  // else if (escPulseWidth < pulseMinNeutral[3] && escPulseWidth > pulseMinLimit[3])
-  //   escPulse = -1; // -1 = Backwards
-  // else
-  //   escPulse = 0; // 0 = Neutral
-  // return escPulse;
-}
 
 //
 // =======================================================================================================
@@ -2275,19 +1835,7 @@ unsigned long loopDuration()
 
 void loop()
 { 
-  readPwmSignals(); 
-
-  if (xSemaphoreTake(xRpmSemaphore, portMAX_DELAY))
-  {
-    // Map pulsewidth to throttle
-    mapThrottle();
-
-    xSemaphoreGive(xRpmSemaphore); // Now free or "Give" the semaphore for others.
-  }
-
-  // Serial configuration comamnds
-  serialInterface();
-
+  mapThrottle();
   // Feeding the RTC watchtog timer is essential!
   rtc_wdt_feed();
 }
