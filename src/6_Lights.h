@@ -11,7 +11,7 @@
  */
 
 // Neopixel settings ----------------------------------------------------------------------------------------------------------------------------------------
-#define NEOPIXEL_ENABLED     // GPIO0 used for WS2812 Neopixel control, if defined! Always enabled, unless you have issues with the library!
+// #define NEOPIXEL_ENABLED     // GPIO0 used for WS2812 Neopixel control, if defined! Always enabled, unless you have issues with the library!
 #if defined NEOPIXEL_ENABLED // only selectable, if NEOPIXELS are in use ---
 // #define NEOPIXEL_ON_CH4 // The CH 4 servo header is used as Neopixel output, if defined (BUS communication mode only, intended for RC trailer controller, no coupler servo)
 #endif                          // ---

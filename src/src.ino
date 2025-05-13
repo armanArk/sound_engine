@@ -8,9 +8,9 @@ char codeVersion[] = "9.13.0"; // Software revision.
 #include "4_Transmission.h"    
 #include "5_Shaker.h"          
 #include "6_Lights.h"          
-#include "7_Servos.h"          
+#include "7_Servos.h"
 #include "8_Sound.h"
-#include "9_Dashboard.h"       
+#include "9_Dashboard.h"
 #include "10_Trailer.h"        
 
 #include <statusLED.h>        // https://github.com/TheDIYGuy999/statusLED <<------- required for LED control
@@ -46,7 +46,7 @@ char codeVersion[] = "9.13.0"; // Software revision.
 // #include <esp_wifi.h>
 // #include <Esp.h>    // for displaying memory information
 #include <EEPROM.h> // for non volatile variable storage
-
+#include <handle_canbus.h>
 // Forward declare functions
 void Task1code(void *parameters);
 void readPwmSignals();
@@ -55,7 +55,6 @@ void channelZero();
 void eepromDebugRead();
 void eepromRead();
 void eepromInit();
-void serialInterface(); 
 
 // Serial DEBUG pins -----
 #ifdef WEMOS_D1_MINI_ESP32 // Wemos D1 Mini board: GPIO3 is available
@@ -68,7 +67,7 @@ void serialInterface();
 #define COMMAND_RX 36                 // pin 36, labelled with "VP", connect it to "Micro RC Receiver" pin "TXO"
 #define COMMAND_TX UART_PIN_NO_CHANGE // 98 is just a dummy -1 (17 reversing)
 
-#define BATTERY_DETECT_PIN 39 // Voltage divider resistors connected to pin "VN & GND"
+#define COUPLER_PIN 27  // CH4 output for coupler (5th. wheel) servo (bus communication only)
 
 #ifdef WEMOS_D1_MINI_ESP32 // switching headlight pin depending on the board variant
 #define HEADLIGHT_PIN 22   // Headlights connected to GPIO 22
@@ -78,6 +77,7 @@ void serialInterface();
 #define CABLIGHT_PIN 22 // Cabin lights connected to GPIO 22
 #endif
 
+#define TAILLIGHT_PIN 15       // Red tail- & brake-lights (combined)
 
 #ifdef NEOPIXEL_ON_CH4           // Switching NEOPIXEL pin for WS2812 LED depending on setting
 #define RGB_LEDS_PIN COUPLER_PIN // Use coupler pin on CH4
@@ -85,12 +85,8 @@ void serialInterface();
 #define RGB_LEDS_PIN 0 // Use GPIO 0 (BOOT button)
 #endif
 
-#if defined THIRD_BRAKELIGHT
-#define BRAKELIGHT_PIN 32 // Upper brake lights
-#else
-#define COUPLER_SWITCH_PIN 32 // switch for trailer coupler sound
-#endif
 
+#define BATTERY_DETECT_PIN 23 // Shaker motor (shaking truck while idling and engine start / stop)
 #define SHAKER_MOTOR_PIN 23 // Shaker motor (shaking truck while idling and engine start / stop)
 
 #define DAC1 25 // connect pin25 (do not change the pin) to a 10kOhm resistor
@@ -102,24 +98,7 @@ void serialInterface();
 // Objects *************************************************************************************
 // Status LED objects (also used for PWM shaker motor and ESC control) -----
 statusLED headLight(false); // "false" = output not inversed
-statusLED tailLight(false);
-statusLED indicatorL(false);
-statusLED indicatorR(false);
-statusLED fogLight(false);
-statusLED reversingLight(false);
-statusLED roofLight(false);
-statusLED sideLight(false);
-statusLED beaconLight1(false);
-statusLED beaconLight2(false);
 statusLED shakerMotor(false);
-statusLED cabLight(false);
-statusLED brakeLight(false);
-  
-
-#if defined NEOPIXEL_ENABLED
-// Neopixel
-CRGB rgbLEDs[NEOPIXEL_COUNT];
-#endif
 
 // Battery voltage
 ESP32AnalogRead battery;
@@ -132,9 +111,6 @@ WiFiServer server(80);
 // WiFi variables
 String ssid;
 String password;
-
-// MAC address for communication with tractor TODO
-uint8_t customMACAddress[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 // HTTP request memory
 String header;
@@ -196,18 +172,7 @@ uint16_t pulseWidthRaw3[PULSE_ARRAY_SIZE]; // Current RC signal RAW pulse width 
 uint16_t pulseWidth[PULSE_ARRAY_SIZE];     // Current RC signal pulse width [X] = channel number
 int16_t pulseOffset[PULSE_ARRAY_SIZE];     // Offset for auto zero adjustment
 
-uint16_t pulseMaxNeutral[PULSE_ARRAY_SIZE]; // PWM input signal configuration storage variables
-uint16_t pulseMinNeutral[PULSE_ARRAY_SIZE];
-uint16_t pulseMax[PULSE_ARRAY_SIZE];
-uint16_t pulseMin[PULSE_ARRAY_SIZE];
-uint16_t pulseMaxLimit[PULSE_ARRAY_SIZE];
-uint16_t pulseMinLimit[PULSE_ARRAY_SIZE];
 
-uint16_t pulseZero[PULSE_ARRAY_SIZE]; // Usually 1500 (The mid point of 1000 - 2000 Microseconds)
-uint16_t pulseLimit = 1100;           // pulseZero +/- this value (1100)
-uint16_t pulseMinValid = 700;         // The minimum valid pulsewidth (was 950)
-uint16_t pulseMaxValid = 2300;        // The maximum valid pulsewidth (was 2050)
-bool autoZeroDone;                    // Auto zero offset calibration done
 #define NONE 16                       // The non existing "Dummy" channel number (usually 16) TODO
 
 volatile boolean failSafe = false; // Triggered in emergency situations like: throttle signal lost etc.
@@ -1246,6 +1211,7 @@ void setup()
   timerAttachInterrupt(fixedTimer, &fixedPlaybackTimer, true); // edge (not level) triggered
   timerAlarmWrite(fixedTimer, fixedTimerTicks, true);          // autoreload true
   timerAlarmEnable(fixedTimer);                                // enable
+  canbusSetup();
 }
 
 //
@@ -1314,9 +1280,6 @@ void eepromDebugRead()
 {
   
 }
-
-
-#include "src/serialInterface.h" // Serial command interface for configuration
 
 void mapThrottle()
 {
@@ -1435,7 +1398,8 @@ void engineMassSimulation()
   _currentThrottle = currentThrottle; // currentThrottle is now from potentiometer via mapThrottle()
 
   if (millis() - throtMillis > timeBase)
-  { // Every 2 or 6ms
+  { 
+    // Every 2 or 6ms
     throtMillis = millis();
 
     if (_currentThrottle > 500)
@@ -1514,7 +1478,7 @@ void engineMassSimulation()
 
   lastThrottle = _currentThrottle;
   // Removed the debug print from here as you have one in loop() or mapThrottle()
-  Serial.printf("currentThrottle:%i,rpm:%i,lassThr:%i,35:%i\n", currentThrottle,currentRpm,lastThrottle,analogRead(35));
+  Serial.printf("currentThrottle:%i,rpm:%i,lassThr:%i,35:%i,eng:%i,timeBase:%i\n", currentThrottle,currentRpm,lastThrottle,analogRead(35),engineOn, timeBase);
 }
 
 //
@@ -1522,10 +1486,19 @@ void engineMassSimulation()
 // SWITCH ENGINE ON OR OFF (for automatic mode)
 // =======================================================================================================
 //
-
+void SerialReceive() 
+{
+  if (Serial.available() > 0) 
+  {
+    char input = Serial.read();  // Read one character
+    engineOn = true;
+    Serial.println("input--------------------- ");
+    delay(1000);
+  }
+}
 void engineOnOff()
 {
-
+  
   // static unsigned long pulseDelayMillis; // TODO
   static unsigned long idleDelayMillis;
 
@@ -1816,7 +1789,6 @@ void automaticGearSelector()
   }
 }
 
-
 //
 // =======================================================================================================
 // LOOP TIME MEASUREMENT
@@ -1834,9 +1806,13 @@ unsigned long loopDuration()
 }
 
 void loop()
-{ 
+{
   mapThrottle();
-  // Feeding the RTC watchtog timer is essential!
+  if (Serial.available()) 
+  {
+    char c = Serial.read();
+    Serial.print("received");
+  }
   rtc_wdt_feed();
 }
 
@@ -1850,8 +1826,6 @@ void Task1code(void *pvParameters)
 {
   for (;;)
   {
-
-    // coreId = xPortGetCoreID(); // Running on core 0
 
     // DAC offset fader
     dacOffsetFade();
