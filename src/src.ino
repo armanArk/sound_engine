@@ -1199,6 +1199,7 @@ void setup()
  
   dacWrite(DAC1, 0);
   dacWrite(DAC2, 0);
+  pinMode(33,INPUT_PULLDOWN);
 
   // Interrupt timer for variable sample rate playback
   variableTimer = timerBegin(0, 20, true);                           // timer 0, MWDT clock period = 12.5 ns * TIMGn_Tx_WDT_CLK_PRESCALE -> 12.5 ns * 20 -> 250 ns = 0.25 us, countUp
@@ -1499,35 +1500,40 @@ void SerialReceive()
 void engineOnOff()
 {
   
-  // static unsigned long pulseDelayMillis; // TODO
-  static unsigned long idleDelayMillis;
+//   // static unsigned long pulseDelayMillis; // TODO
+//   static unsigned long idleDelayMillis;
 
-  // Engine automatically switched on or off depending on throttle position and 15s delay timne
-  if (currentThrottle > 80 || driveState != 0)
-    idleDelayMillis = millis(); // reset delay timer, if throttle not in neutral
+//   // Engine automatically switched on or off depending on throttle position and 15s delay timne
+//   if (currentThrottle > 80 || driveState != 0)
+//     idleDelayMillis = millis(); // reset delay timer, if throttle not in neutral
 
-#ifdef AUTO_ENGINE_ON_OFF
-  if (millis() - idleDelayMillis > 15000)
-  {
-    engineOn = false; // after delay, switch engine off
-  }
-#endif
+// #ifdef AUTO_ENGINE_ON_OFF
+//   if (millis() - idleDelayMillis > 15000)
+//   {
+//     engineOn = false; // after delay, switch engine off
+//   }
+// #endif
 
-#ifdef AUTO_LIGHTS
-  if (millis() - idleDelayMillis > 10000)
-  {
-    lightsOn = false; // after delay, switch light off
-  }
-#endif
+// #ifdef AUTO_LIGHTS
+//   if (millis() - idleDelayMillis > 10000)
+//   {
+//     lightsOn = false; // after delay, switch light off
+//   }
+// #endif
 
-  // Engine start detection
-  if (currentThrottle > 100 && !airBrakeTrigger)
-  {
+//   // Engine start detection
+//   if (currentThrottle > 100 && !airBrakeTrigger)
+//   {
+//     engineOn = true;
+
+// #ifdef AUTO_LIGHTS
+//     lightsOn = true;
+// #endif
+//   }
+  if(digitalRead(33)){
     engineOn = true;
-
-#ifdef AUTO_LIGHTS
-    lightsOn = true;
-#endif
+  }else{
+    engineOn = false;
   }
 }
 
@@ -1808,11 +1814,6 @@ unsigned long loopDuration()
 void loop()
 {
   mapThrottle();
-  if (Serial.available()) 
-  {
-    char c = Serial.read();
-    Serial.print("received");
-  }
   rtc_wdt_feed();
 }
 
