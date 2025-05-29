@@ -11,8 +11,8 @@ volatile int startVolumePercentage = 150; // Adjust the start volume (usually = 
 volatile int idleVolumePercentage = 80; // Adjust the idle volume (usually = 100%, more also working, depending on sound, 50 - 60% if additional diesel knock sound is used)
 volatile int engineIdleVolumePercentage = 60; // the engine volume will be throttle dependent (usually = 40%, never more than 100%!)
 volatile int fullThrottleVolumePercentage = 130; // Volume Percentage while full throttle (for rev sound as well)
-// #include "sounds/LaFerrariIdle.h" // Jaguar XJS V12
-#include "sounds/VWBeetleIdle.h" // VW Beetle / Käfer
+#include "sounds/LaFerrariIdle.h" // Jaguar XJS V12
+// #include "sounds/VWBeetleIdle.h" // VW Beetle / Käfer
 // #include "sounds/idleDummy.h" // Dummy
 
 // Choose the motor revving sound (uncomment the one you want) --------

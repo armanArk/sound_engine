@@ -24,7 +24,6 @@ void canbusSetup()
     }
     CAN.setMode(MCP_NORMAL);
     pinMode(CAN_INT, INPUT);
-
 }
 
 // Tambahkan variabel global untuk melacak waktu

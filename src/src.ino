@@ -321,6 +321,8 @@ SemaphoreHandle_t xRpmSemaphore;
 // These are used to print the reset reason on startup
 const char *RESET_REASONS[] = {"POWERON_RESET", "NO_REASON", "SW_RESET", "OWDT_RESET", "DEEPSLEEP_RESET", "SDIO_RESET", "TG0WDT_SYS_RESET", "TG1WDT_SYS_RESET", "RTCWDT_SYS_RESET", "INTRUSION_RESET", "TGWDT_CPU_RESET", "SW_CPU_RESET", "RTCWDT_CPU_RESET", "EXT_CPU_RESET", "RTCWDT_BROWN_OUT_RESET", "RTCWDT_RTC_RESET"};
 
+bool POTENTIO_MODE = true;
+
 // Convert µs to degrees (°)
 float us2degree(uint16_t value)
 {
@@ -1143,7 +1145,7 @@ void setup()
   battery.attach(BATTERY_DETECT_PIN);
 
   // Print some system and software info to serial monitor
-  delay(1000); // Give serial port/connection some time to get ready
+  delay(500); // Give serial port/connection some time to get ready
   Serial.printf("\n**************************************************************************************************\n");
   Serial.printf("TheDIYGuy999 RC engine sound & light controller for ESP32 software version %s\n", codeVersion);
   Serial.printf("https://github.com/TheDIYGuy999/Rc_Engine_Sound_ESP32\n");
@@ -1185,6 +1187,8 @@ void setup()
   timelast = micros();
   timelastloop = timelast;
 
+  canbusSetup();
+
   // Task 1 setup (running on core 0)
   TaskHandle_t Task1;
   // create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
@@ -1212,7 +1216,6 @@ void setup()
   timerAttachInterrupt(fixedTimer, &fixedPlaybackTimer, true); // edge (not level) triggered
   timerAlarmWrite(fixedTimer, fixedTimerTicks, true);          // autoreload true
   timerAlarmEnable(fixedTimer);                                // enable
-  canbusSetup();
 }
 
 //
@@ -1284,8 +1287,12 @@ void eepromDebugRead()
 
 void mapThrottle()
 {
+  if(POTENTIO_MODE){
+    currentThrottle = map(analogRead(35),0,3900,0,500);
+  }else{
+//   currentThrottle = throttle canbus
+  }
 
-  currentThrottle = map(analogRead(35),0,3900,0,500);
 
   // As a base for some calculations below, fade the current throttle to make it more natural
   static unsigned long throttleFaderMicros;
@@ -1296,9 +1303,9 @@ void mapThrottle()
 
     // Fade currentThrottle for smoother volume transitions
     if (currentThrottleFaded < currentThrottle && currentThrottleFaded < 499) // Removed: !escIsBraking 
-      currentThrottleFaded += 2;
+      currentThrottleFaded += 16;
     if (currentThrottleFaded > currentThrottle && currentThrottleFaded > 2) // Removed: || escIsBraking
-      currentThrottleFaded -= 2;
+      currentThrottleFaded -= 16;
     currentThrottleFaded = constrain(currentThrottleFaded, 0, 500);
 
 
@@ -1498,38 +1505,40 @@ void SerialReceive()
   }
 }
 void engineOnOff()
-{
-  
-//   // static unsigned long pulseDelayMillis; // TODO
-//   static unsigned long idleDelayMillis;
+{ 
+  if(POTENTIO_MODE){
+  // static unsigned long pulseDelayMillis; // TODO
+  static unsigned long idleDelayMillis;
 
-//   // Engine automatically switched on or off depending on throttle position and 15s delay timne
-//   if (currentThrottle > 80 || driveState != 0)
-//     idleDelayMillis = millis(); // reset delay timer, if throttle not in neutral
+  // Engine automatically switched on or off depending on throttle position and 15s delay timne
+  if (currentThrottle > 80 || driveState != 0)
+    idleDelayMillis = millis(); // reset delay timer, if throttle not in neutral
 
-// #ifdef AUTO_ENGINE_ON_OFF
-//   if (millis() - idleDelayMillis > 15000)
-//   {
-//     engineOn = false; // after delay, switch engine off
-//   }
-// #endif
+#ifdef AUTO_ENGINE_ON_OFF
+  if (millis() - idleDelayMillis > 15000)
+  {
+    engineOn = false; // after delay, switch engine off
+  }
+#endif
 
-// #ifdef AUTO_LIGHTS
-//   if (millis() - idleDelayMillis > 10000)
-//   {
-//     lightsOn = false; // after delay, switch light off
-//   }
-// #endif
+#ifdef AUTO_LIGHTS
+  if (millis() - idleDelayMillis > 10000)
+  {
+    lightsOn = false; // after delay, switch light off
+  }
+#endif
 
-//   // Engine start detection
-//   if (currentThrottle > 100 && !airBrakeTrigger)
-//   {
-//     engineOn = true;
+  // Engine start detection
+  if (currentThrottle > 100 && !airBrakeTrigger)
+  {
+    engineOn = true;
 
-// #ifdef AUTO_LIGHTS
-//     lightsOn = true;
-// #endif
-//   }
+#ifdef AUTO_LIGHTS
+    lightsOn = true;
+#endif
+  }
+  }
+
   if(digitalRead(33)){
     engineOn = true;
   }else{
@@ -1815,6 +1824,7 @@ void loop()
 {
   mapThrottle();
   rtc_wdt_feed();
+  handleReceivingCanbus();
 }
 
 //
