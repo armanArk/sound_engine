@@ -322,6 +322,7 @@ SemaphoreHandle_t xRpmSemaphore;
 const char *RESET_REASONS[] = {"POWERON_RESET", "NO_REASON", "SW_RESET", "OWDT_RESET", "DEEPSLEEP_RESET", "SDIO_RESET", "TG0WDT_SYS_RESET", "TG1WDT_SYS_RESET", "RTCWDT_SYS_RESET", "INTRUSION_RESET", "TGWDT_CPU_RESET", "SW_CPU_RESET", "RTCWDT_CPU_RESET", "EXT_CPU_RESET", "RTCWDT_BROWN_OUT_RESET", "RTCWDT_RTC_RESET"};
 
 bool POTENTIO_MODE = true;
+bool ENABLE_IDLE_SOUND = false;
 
 // Convert µs to degrees (°)
 float us2degree(uint16_t value)
@@ -1511,7 +1512,7 @@ void engineOnOff()
   static unsigned long idleDelayMillis;
 
   // Engine automatically switched on or off depending on throttle position and 15s delay timne
-  if (currentThrottle > 80 || driveState != 0)
+  if (currentThrottle > 30 || driveState != 0)
     idleDelayMillis = millis(); // reset delay timer, if throttle not in neutral
 
 #ifdef AUTO_ENGINE_ON_OFF
@@ -1537,12 +1538,13 @@ void engineOnOff()
     lightsOn = true;
 #endif
   }
-  }
-
-  if(digitalRead(33)){
-    engineOn = true;
   }else{
-    engineOn = false;
+    if(digitalRead(33))
+    {
+      engineOn = true;
+    }else{
+      engineOn = false;
+    }
   }
 }
 

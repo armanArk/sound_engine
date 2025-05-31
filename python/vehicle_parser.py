@@ -48,6 +48,7 @@ class VehicleConfig:
         self.dec = 1
         self.max_rpm_percentage = 500
         # Other
+        self.idle_rpm_target = 800  # Default value from EngineParameters
         self.indicator_on = 300
         self.indicator_dir = True
         self.double_flash_blue_light = False
@@ -202,4 +203,4 @@ if __name__ == "__main__":
         print(f"  Knock: {config.knock_sound} ({config.knock_volume}%)")
         print(f"  Horn: {config.horn_sound} ({config.horn_volume}%)")
         print(f"  Siren: {config.siren_sound} ({config.siren_volume}%)")
-        print(f"  Flags: {sorted(list(config.flags))}") 
+        print(f"  Flags: {sorted(list(config.flags))}")

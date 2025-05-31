@@ -7,6 +7,10 @@ import os
 from queue import Queue
 from vehicle_parser import load_all_vehicles, VehicleConfig
 
+def constrain(value, min_value, max_value):
+    """Clamps a value to a specified range."""
+    return max(min_value, min(value, max_value))
+
 # Initialize pygame mixer with lower frequency for better control
 pygame.mixer.init(frequency=22050, size=-16, channels=2) # Increased channels to 2 for engine sounds
 
@@ -38,14 +42,52 @@ class AudioEngine:
         self.engine_stop = False
         
         # Physics parameters
-        self.throttle = 0.0
+        self.throttle_input = 0.0 # 0.0-1.0, from user
+        self._current_throttle_faded_500 = 0.0 # Faded throttle, 0-500 scale
         self.current_rpm = 0
-        self.target_rpm = 0
-        # Default acc/dec, will be overwritten by vehicle config
-        self.acceleration = 5 
-        self.deceleration = 5
-        self.engine_mass = 1000  # kg (less relevant for this physics model)
-        self.dt = 0.01  # 100Hz physics update
+        
+        # These will be loaded from vehicle_config
+        self.acc_cfg = 3 
+        self.dec_cfg = 1
+        self.time_base_ms_cfg = 2 # Default C++ timeBase
+        self._min_rpm_cfg = 0
+        self._max_rpm_cfg = 500
+        
+        self.master_volume = 100
+        
+        # Thread control
+        self.running = True
+        self.physics_thread = None
+        self.debug_thread = None
+        
+        # Debug variables
+        self._debug_faded_throttle_500 = 0.0
+        self._debug_target_rpm = 0.0
+        self._debug_idle_channel_vol = 0.0
+        self._debug_rev_channel_vol = 0.0
+        self._debug_a1_multi_perc = 0.0 # For rev sound blending
+
+        # Debug volume calculation details initialization
+        self._debug_engine_idle_vol_perc_cfg = 0.0
+        self._debug_full_throttle_vol_perc_cfg = 0.0
+        self._debug_throttle_map_output_perc = 0.0
+        self._debug_engine_rev_vol_perc_cfg = 0.0
+        self._debug_base_idle_scaler_cfg_perc = 0.0
+        self._debug_base_rev_scaler_cfg_perc = 0.0
+        self._debug_rev_switch_point_cfg = 0.0
+        self._debug_idle_end_point_cfg = 0.0
+        self._debug_idle_vol_proportion_perc_cfg = 0.0
+        self._debug_throttle_map_output_for_rev_perc = 0.0
+
+        # Engine mass simulation variables (from C++ engineMassSimulation)
+        self._last_throttle_input_500 = 0.0 # On 0-500 scale
+        self._wastegate_trigger = False
+        self._blowoff_trigger = False
+        self._wastegate_millis = 0
+        self._blowoff_millis = 0
+        
+        self.dt = 0.01 # 100Hz physics update (10ms)
+        self.debug_log_rate_hz = 20 # Default debug log rate (20 Hz)
         
         # Volume control
         self.master_volume = 100 # 0-100 scale
@@ -88,8 +130,12 @@ class AudioEngine:
         self.sound_buffers.clear()
         
         # Set vehicle-specific physics parameters
-        self.acceleration = getattr(vehicle_config, 'acc', 5) # Default to 5 if not in config
-        self.deceleration = getattr(vehicle_config, 'dec', 5) # Default to 5 if not in config
+        self.acc_cfg = getattr(vehicle_config, 'acc', 3) # Default from Beetle
+        self.dec_cfg = getattr(vehicle_config, 'dec', 1) # Default from Beetle
+        print(f"[DEBUG Load] acc_cfg: {self.acc_cfg}, dec_cfg: {self.dec_cfg}")
+        # In C++, minRpm=0, maxRpm=500 are implicit in maps.
+        self._min_rpm_cfg = getattr(vehicle_config, 'min_rpm', 0)
+        self._max_rpm_cfg = getattr(vehicle_config, 'max_rpm', 500)
         
         # Stop any currently playing sounds on engine channels
         self.idle_channel.stop()
@@ -97,9 +143,6 @@ class AudioEngine:
         
         # Load engine sounds (idle and rev)
         idle_sound_name = getattr(vehicle_config, 'idle_sound', None)
-        rev_sound_name = getattr(vehicle_config, 'rev_sound', None)
-        has_rev_sound_flag = getattr(vehicle_config, 'has_rev_sound', False)
-
         if idle_sound_name:
             idle_sound_path = os.path.join("sounds", idle_sound_name)
             if os.path.exists(idle_sound_path):
@@ -113,28 +156,39 @@ class AudioEngine:
         else:
              print("Warning: No idle sound defined for this vehicle.")
              
-        # Load rev sound only if defined and flag is set
-        if has_rev_sound_flag and rev_sound_name:
-             rev_sound_path = os.path.join("sounds", rev_sound_name)
-             if os.path.exists(rev_sound_path):
-                 try:
-                     self.sound_buffers['rev'] = pygame.mixer.Sound(rev_sound_path)
-                     print(f"Loaded rev sound: {rev_sound_name}")
-                     print(f"[Sound Load Status] Rev sound loading: Success - {rev_sound_name}") # Debug print
-                 except Exception as e:
-                    print(f"Error loading rev sound {rev_sound_name}: {e}")
-                    print(f"[Sound Load Status] Rev sound loading: Failed - {rev_sound_name} ({e})") # Debug print
-             else:
-                print(f"Error: Rev sound file not found: {rev_sound_path}")
-                print(f"[Sound Load Status] Rev sound loading: File Not Found - {rev_sound_path}") # Debug print
-        elif rev_sound_name and not has_rev_sound_flag:
-             print(f"Info: Rev sound '{rev_sound_name}' defined but not enabled (REV_SOUND not defined in vehicle config).")
-             print(f"[Sound Load Status] Rev sound loading: Disabled by config - {rev_sound_name}") # Debug print
-        else:
-             # No rev sound defined in config
-             print("[Sound Load Status] Rev sound loading: Not defined in vehicle config.") # Debug print
+        if getattr(vehicle_config, 'has_rev_sound', False):
+            rev_sound_name = getattr(vehicle_config, 'rev_sound', None)
+            if rev_sound_name:
+                rev_sound_path = os.path.join("sounds", rev_sound_name)
+                if os.path.exists(rev_sound_path):
+                    try:
+                        self.sound_buffers['rev'] = pygame.mixer.Sound(rev_sound_path)
+                        print(f"Loaded rev sound: {rev_sound_name}")
+                    except Exception as e:
+                        print(f"Error loading rev sound {rev_sound_name}: {e}")
+                else:
+                    print(f"Error: Rev sound file not found: {rev_sound_path}")
+            else:
+                print("Warning: Rev sound enabled in config but no file specified.")
 
         # Load other sounds
+        # Debugging start sound loading
+        start_sound_name = getattr(vehicle_config, 'start_sound', None)
+        print(f"[DEBUG Load] Start sound name from config: {start_sound_name}")
+        if start_sound_name:
+            start_sound_path = os.path.join("sounds", start_sound_name)
+            print(f"[DEBUG Load] Looking for start sound at: {start_sound_path}")
+            # Check if file exists before attempting to load
+            if os.path.exists(start_sound_path):
+                 try:
+                      self.sound_buffers['start'] = pygame.mixer.Sound(start_sound_path)
+                      print(f"Loaded start sound: {start_sound_name}")
+                 except Exception as e:
+                      print(f"Error loading start sound {start_sound_name}: {e}")
+            else:
+                 print(f"Error: Start sound file not found: {start_sound_path}")
+
+        # Continue loading other sounds (horn, siren, etc.)
         for sound_type in ['start', 'horn', 'siren']:
              sound_name = getattr(vehicle_config, f"{sound_type}_sound", None)
              if sound_name:
@@ -160,44 +214,80 @@ class AudioEngine:
         # print(f"[Physics] Throttle: {self.throttle:.2f}, Current RPM: {self.current_rpm}")
 
         if self.engine_state == EngineState.RUNNING and self.current_vehicle:
-            # Calculate target RPM based on throttle (linear map 0-500 like ESP32 example)
-            # Map throttle from 0.0-1.0 to 0-500 range
-            target_rpm = int(self.throttle * 500)
+            # Calculate target RPM based on the non-faded throttle input
+            target_throttle_500 = int(self.throttle_input * 500)
+            
+            # Replicate C++ time-based throttle interpolation from mapThrottle
+            # C++ uses a fixed 500us interval and step of 16
+            # In Python, we use dt and need to adjust the step size proportionally
+            # We should update this based on a fixed time accumulator, not just dt directly.
+            # Let's add an accumulator for the faded throttle update timer
+            # If we were directly porting C++: self._current_throttle_faded_500 += 16 if accelerating, -= 16 if decelerating
+            # But this happens every 500us (0.5ms). Our physics update is 10ms.
+            # So in a 10ms interval, the C++ updates faded throttle 20 times (10ms / 0.5ms = 20)
+            # The total change in 10ms in C++ is step * (dt / interval) = 16 * (0.010 / 0.0005) = 16 * 20 = 320
+            # However, the C++ logic is simpler: it just adds/subtracts 16 every 0.5ms loop iteration
+            # Let's try to replicate the *amount* of change that would happen in self.dt
+            
+            # Determine the fade step based on C++ logic's fixed step (16) and interval (0.5ms)
+            cpp_fade_step = 16 # Fixed step in C++
+            cpp_fade_interval_ms = 0.5 # Fixed interval in C++ (500us)
+            
+            # Calculate how many C++ intervals fit into our dt
+            num_intervals = (self.dt * 1000.0) / cpp_fade_interval_ms
+            
+            # Calculate the total change to apply in this dt
+            fade_amount = cpp_fade_step * num_intervals
+
+            # Apply the fade amount towards the target throttle
+            if self._current_throttle_faded_500 < target_throttle_500:
+                self._current_throttle_faded_500 += fade_amount
+                # Ensure we don't overshoot the target
+                if self._current_throttle_faded_500 > target_throttle_500:
+                     self._current_throttle_faded_500 = target_throttle_500
+            elif self._current_throttle_faded_500 > target_throttle_500:
+                self._current_throttle_faded_500 -= fade_amount
+                # Ensure we don't overshoot the target
+                if self._current_throttle_faded_500 < target_throttle_500:
+                     self._current_throttle_faded_500 = target_throttle_500
+
+            # Ensure faded throttle stays within 0-500 range
+            self._current_throttle_faded_500 = constrain(self._current_throttle_faded_500, 0.0, 500.0)
+
             # Ensure minimum target RPM is idle RPM if above 0 throttle
-            # Assuming idle RPM is 50 based on previous analysis, could be vehicle config parameter
-            idle_rpm_target = getattr(self.current_vehicle, 'idle_rpm_target', 50)
-            if self.throttle > 0:
-                 target_rpm = max(idle_rpm_target, target_rpm)
+            idle_rpm_target = getattr(self.current_vehicle, 'idle_rpm_target')
+            # Match C++ dead zone behavior from engineMassSimulation
+            target_rpm = target_throttle_500
+            if self._current_throttle_faded_500 > 0:
+                target_rpm = max(idle_rpm_target, target_throttle_500)
             else:
-                 target_rpm = idle_rpm_target # At zero throttle, target is idle RPM
+                target_rpm = idle_rpm_target
 
-            # Get acceleration/deceleration values from instance (loaded from config)
-            acc = self.acceleration
-            dec = self.deceleration
-
-            # Engine RPM Acceleration / Deceleration (Core Inertia Simulation) similar to ESP32
+            # Engine RPM Acceleration/Deceleration using vehicle config values directly
             rpm_diff = target_rpm - self.current_rpm
 
             if rpm_diff > 0:
-                 # Accelerate engine
-                self.current_rpm = min(self.current_rpm + acc, target_rpm)
+                # Accelerate engine
+                self.current_rpm = min(self.current_rpm + self.acc_cfg, target_rpm)
             elif rpm_diff < 0:
-                 # Decelerate engine
-                self.current_rpm = max(self.current_rpm - dec, target_rpm)
+                # Decelerate engine
+                self.current_rpm = max(self.current_rpm - self.dec_cfg, target_rpm)
 
             # Ensure minimum idle RPM when engine is running
             # This check is important if dec makes RPM drop below idle_rpm_target even if target is > idle_rpm_target
-            if self.current_rpm < idle_rpm_target and self.throttle > 0:
-                 self.current_rpm = idle_rpm_target
+            # Match C++ minimum RPM check using faded throttle
+            if self.current_rpm < idle_rpm_target and self.throttle_input > 0:
+                self.current_rpm = idle_rpm_target
             # If throttle is 0 and RPM drops, let it go to the true idle target
 
             # Debug print: Show target RPM and updated current RPM
             # print(f"[Physics] Target RPM: {target_rpm}, Updated Current RPM: {self.current_rpm}")
 
+            self._debug_target_rpm = target_rpm
+
         elif self.engine_state == EngineState.STOPPING:
              # Decelerate to 0 RPM when stopping
-            dec = self.deceleration # Use deceleration value from instance
-            self.current_rpm = max(self.current_rpm - dec, 0)
+            self.current_rpm = max(self.current_rpm - self.dec_cfg, 0)
             if self.current_rpm == 0:
                  # Transition to OFF state once RPM reaches 0
                  self.engine_state = EngineState.OFF
@@ -209,6 +299,8 @@ class AudioEngine:
 
         else:
             self.current_rpm = 0 # RPM is 0 when OFF or STARTING (before running)
+
+        self._last_throttle_input_500 = target_throttle_500
 
     def update_volumes_and_pitch(self):
         """Update volume and pitch levels for engine sounds based on throttle and RPM.
@@ -225,8 +317,11 @@ class AudioEngine:
             return
 
         # Calculate throttle and RPM dependent volumes (similar to ESP32 mapThrottle)
-        throttle_500 = int(self.throttle * 500) # Scale throttle 0-1 to 0-500 range
+        throttle_500 = int(self.throttle_input * 500) # Scale throttle 0-1 to 0-500 range
         throttle_500 = max(0, min(500, throttle_500)) # Ensure bounds
+
+        # Recalculate target_throttle_500 for use in this function
+        target_throttle_500 = int(self.throttle_input * 500)
 
         # Get volume percentages from vehicle config
         engine_idle_vol_perc = getattr(self.current_vehicle, 'engine_idle_volume', 100)
@@ -238,52 +333,69 @@ class AudioEngine:
         # Interpolate throttle-dependent engine volumes (0-100 scale)
         # ESP32 maps throttle 0-500 to engineIdleVolumePercentage-fullThrottleVolumePercentage
         calc_engine_idle_vol = np.interp(throttle_500, [0, 500], [engine_idle_vol_perc, full_throttle_vol_perc])
+        calc_engine_idle_vol = constrain(calc_engine_idle_vol, 0, 100)
         calc_engine_rev_vol = np.interp(throttle_500, [0, 500], [engine_rev_vol_perc, full_throttle_vol_perc])
+        calc_engine_rev_vol = constrain(calc_engine_rev_vol, 0, 100)
 
         # Determine the blend ratio between idle and rev sounds based on RPM
         # ESP32 uses revSwitchPoint and idleEndPoint (get from vehicle config, use defaults if not present)
-        rev_switch_point = getattr(self.current_vehicle, 'revSwitchPoint', 280)
-        idle_end_point = getattr(self.current_vehicle, 'idleEndPoint', 300)
+        # Load blending configuration from vehicle config
+        rev_switch_point_cfg = getattr(self.current_vehicle, 'rev_switch_point', 280)
+        idle_end_point_cfg = getattr(self.current_vehicle, 'idle_end_point', 300)
+        idle_vol_proportion_perc_cfg = getattr(self.current_vehicle, 'idle_volume_proportion_percentage', 90)
 
-        idle_blend = 0.0
-        rev_blend = 0.0
+        # Load base volume percentages from vehicle config
+        idle_base_vol_perc = getattr(self.current_vehicle, 'idle_volume_percentage', 100)
+        rev_base_vol_perc = getattr(self.current_vehicle, 'rev_volume_percentage', 100)
 
-        blending_rpm = max(0, min(500, self.current_rpm)) # Ensure current_rpm is within 0-500 range for blending
+        # Calculate a1Multi based on C++ logic for blending idle and rev sounds
+        # a1Multi determines the proportion of idle sound (0-100)
+        a1_multi_perc = 0.0
+        # Blending will now be based on FADED THROTTLE (0-500 scale), not RPM
+        blending_input_500 = self._current_throttle_faded_500
 
-        if blending_rpm < rev_switch_point:
-            # Mostly idle below revSwitchPoint
-            idle_blend = 1.0
-            rev_blend = 0.0
-        elif blending_rpm < idle_end_point:
-            # Blend between revSwitchPoint and idleEndPoint (linear interpolation)
-            blend_range = idle_end_point - rev_switch_point
-            if blend_range > 0:
-                rev_weight = (blending_rpm - rev_switch_point) / float(blend_range)
-                idle_blend = 1.0 - rev_weight
-                rev_blend = rev_weight
-            else:
-                # Should not happen, default to full idle
-                idle_blend = 1.0
-                rev_blend = 0.0
+        # Replicating C++ a1Multi blending logic precisely (src/src.ino lines ~555-560)
+        # Using config points (originally for RPM) as throttle points for blending
+
+        if blending_input_500 > rev_switch_point_cfg:
+            # Map blending_input_500 from [rev_switch_point_cfg, idle_end_point_cfg] to [idle_vol_proportion_perc_cfg, 0.0]
+            # This replicates the C++ map behavior where RPM > revSwitchPoint
+            a1_multi_perc = np.interp(
+                blending_input_500,
+                [rev_switch_point_cfg, idle_end_point_cfg],
+                [idle_vol_proportion_perc_cfg, 0.0] # Output goes from idle_vol_proportion_perc_cfg down to 0
+            )
         else:
-            # Mostly rev above idleEndPoint
-            idle_blend = 0.0
-            rev_blend = 1.0
+            # If input is at or below revSwitchPoint, a1Multi is idleVolumeProportionPercentage
+            a1_multi_perc = idle_vol_proportion_perc_cfg
 
-        # --- C++ mapThrottle inspired Volume Calculation ---
-        # Calculate throttle-dependent base volumes for idle and rev sounds separately (0-100 scale)
-        # Similar to throttleDependentVolume and throttleDependentRevVolume in C++
-        throttle_dependent_idle_vol_perc = np.interp(throttle_500, [0, 500], [engine_idle_vol_perc, full_throttle_vol_perc])
-        throttle_dependent_rev_vol_perc = np.interp(throttle_500, [0, 500], [engine_rev_vol_perc, full_throttle_vol_perc])
+        # Apply the overriding check: if input > idleEndPoint, a1Multi = 0
+        if blending_input_500 > idle_end_point_cfg:
+             a1_multi_perc = 0.0
 
-        # Scale these throttle-dependent volumes by master volume and convert to Pygame's 0.0-1.0 scale
-        scaled_throttle_idle_vol = (throttle_dependent_idle_vol_perc / 100.0) * (self.master_volume / 100.0)
-        scaled_throttle_rev_vol = (throttle_dependent_rev_vol_perc / 100.0) * (self.master_volume / 100.0)
+        # Ensure a1_multi_perc is within bounds (0-100)
+        a1_multi_perc = constrain(a1_multi_perc, 0.0, 100.0)
 
-        # Apply the RPM-based blending to the scaled throttle-dependent volumes
-        # This is conceptually similar to how the blended amplitude is calculated in the C++ main loop
-        final_idle_volume_pygame_scale = scaled_throttle_idle_vol * idle_blend
-        final_rev_volume_pygame_scale = scaled_throttle_rev_vol * rev_blend
+        # Debug print for a1Multi - will be logged by debug thread
+        self._debug_a1_multi_perc = a1_multi_perc
+
+        # --- Calculate Final Channel Volumes ---
+        # Each channel's volume is determined by its calculated throttle-dependent volume,
+        # the blending factor, its base volume percentage from config, and the master volume.
+
+        final_idle_volume_pygame_scale = (
+            (calc_engine_idle_vol / 100.0) * # Throttle-dependent idle vol (0-1 scale)
+            (a1_multi_perc / 100.0) * # a1Multi blending factor for idle
+            (idle_base_vol_perc / 100.0) * # Base idle volume percentage from config (corrected variable name)
+            (self.master_volume / 100.0) # Master volume
+        )
+
+        final_rev_volume_pygame_scale = (
+            (calc_engine_rev_vol / 100.0) * # Throttle-dependent rev vol (0-1 scale)
+            ((100.0 - a1_multi_perc) / 100.0) * # a1Multi blending factor for rev
+            (rev_base_vol_perc / 100.0) * # Base rev volume percentage from config (corrected variable name)
+            (self.master_volume / 100.0) # Master volume
+        )
 
         # Constrain volumes to Pygame's range (0.0 to 1.0)
         final_idle_volume_pygame_scale = max(0.0, min(1.0, final_idle_volume_pygame_scale))
@@ -297,44 +409,142 @@ class AudioEngine:
         else:
              self.rev_channel.set_volume(0) # Ensure rev channel is silent if no rev sound
 
-        # --- Store debug values for debug thread ---
-        self._debug_total_target_volume = final_idle_volume_pygame_scale + final_rev_volume_pygame_scale
-        self._debug_idle_volume = final_idle_volume_pygame_scale
-        self._debug_rev_volume = final_rev_volume_pygame_scale
-        self._debug_rev_switch = rev_switch_point
-        self._debug_idle_end = idle_end_point
-        self._debug_idle_blend = idle_blend
-        self._debug_rev_blend = rev_blend
+        # --- Update Pitch ---
+        # Apply pitch scaling to both channels based on FADED THROTTLE (0-500 scale)
+        pitch_input_500 = self._current_throttle_faded_500
 
-        # Debug printing (optional) - Now handled by debug_printer_thread_func
-        # print(f"[DEBUG 2Hz] RPM: {self.current_rpm}, Thr: {self.throttle:.2f}, RevSwitch: {rev_switch_point}, IdleEnd: {idle_end_point}, IdleBlend: {idle_blend:.2f}, RevBlend: {rev_blend:.2f}, RawTarget%: {raw_target_engine_vol_perc:.1f}, TotalTargetVol: {self._debug_total_target_volume:.2f}, IdleVol: {final_idle_volume_pygame_scale:.2f}, RevVol: {final_rev_volume_pygame_scale:.2f}")
+        # Ensure pitch range is valid before mapping
+        if self.max_pitch > self.min_pitch:
+             # Map faded throttle (0-500) to pitch range (min_pitch to max_pitch)
+             pitch_factor = np.interp(
+                 pitch_input_500, [0.0, 500.0],
+                 [self.min_pitch, self.max_pitch]
+             )
+             # Constrain pitch to the defined range
+             pitch_factor = constrain(pitch_factor, self.min_pitch, self.max_pitch)
+             
+             # Apply pitch to channels
+             self.idle_channel.set_pitch(pitch_factor)
+             self.rev_channel.set_pitch(pitch_factor)
+        else:
+             # Default pitch if range is invalid or min/max are the same
+             self.idle_channel.set_pitch(1.0)
+             self.rev_channel.set_pitch(1.0)
+
+        # Debug printing (optional)
+        # print(f"[AudioUpdate] RPM: {self.current_rpm}, Thr: {self.throttle:.2f}, IdleBlend: {idle_blend:.2f}, RevBlend: {rev_blend:.2f}, IdleVol: {final_idle_volume_pygame_scale:.2f}, RevVol: {final_rev_volume_pygame_scale:.2f}")
+
+        vc = self.current_vehicle
+        fade_rate = self.acc_cfg if self._current_throttle_faded_500 < target_throttle_500 else self.dec_cfg
+        current_rpm_500 = self.current_rpm
+
+        # --- Volume calculation based on C++ mapThrottle and ISR logic ---
+        
+        # 1. Calculate throttle_map_output_perc (like C++ throttleDependentVolume)
+        # These are from vehicle config (e.g., Beetle: eng_idle=120, full_thr=200)
+        engine_idle_vol_perc_cfg = getattr(vc, 'engine_idle_volume_percentage', 100)
+        full_throttle_vol_perc_cfg = getattr(vc, 'full_throttle_volume_percentage', 100)
+        
+        throttle_map_output_perc = np.interp(
+            self._current_throttle_faded_500, [0, 500],
+            [engine_idle_vol_perc_cfg, full_throttle_vol_perc_cfg]
+        )
+        print(f"[DEBUG VolCalc] FadThr500: {self._current_throttle_faded_500:.1f}, EngIdleVol%: {engine_idle_vol_perc_cfg}, FullThrVol%: {full_throttle_vol_perc_cfg}, ThrottleMapOut%: {throttle_map_output_perc:.1f}")
+
+        # Get base volume scalers (C++ globals, e.g., Beetle: idle_vol_perc=120)
+        base_idle_scaler_cfg_perc = getattr(vc, 'idle_volume_percentage', 100)
+
+        # Store debug values
+        self._debug_idle_channel_vol = self.idle_channel.get_volume()
+        self._debug_rev_channel_vol = self.rev_channel.get_volume()
+
+        # Debug volume calculation details
+        self._debug_faded_throttle_500 = self._current_throttle_faded_500
+        self._debug_engine_idle_vol_perc_cfg = engine_idle_vol_perc_cfg
+        self._debug_full_throttle_vol_perc_cfg = full_throttle_vol_perc_cfg
+        self._debug_throttle_map_output_perc = throttle_map_output_perc
+        if getattr(vc, 'has_rev_sound', False):
+            self._debug_engine_rev_vol_perc_cfg = engine_rev_vol_perc
+            self._debug_base_idle_scaler_cfg_perc = base_idle_scaler_cfg_perc
+            self._debug_base_rev_scaler_cfg_perc = base_rev_scaler_cfg_perc
+            self._debug_rev_switch_point_cfg = rev_switch_point_cfg
+            self._debug_idle_end_point_cfg = idle_end_point_cfg
+            self._debug_idle_vol_proportion_perc_cfg = idle_vol_proportion_perc_cfg
+            self._debug_throttle_map_output_for_rev_perc = throttle_map_output_for_rev_perc
+        else:
+            self._debug_engine_rev_vol_perc_cfg = 0 # N/A
+            self._debug_base_idle_scaler_cfg_perc = base_idle_scaler_cfg_perc # Still relevant for non-rev sound calc
+            self._debug_base_rev_scaler_cfg_perc = 0 # N/A
+            self._debug_rev_switch_point_cfg = 0 # N/A
+            self._debug_idle_end_point_cfg = 0 # N/A
+            self._debug_idle_vol_proportion_perc_cfg = 0 # N/A
+            self._debug_throttle_map_output_for_rev_perc = 0 # N/A
+
+        # Ensure debug a1_multi_perc is set even if has_rev_sound is False (will be 100)
+        if not getattr(vc, 'has_rev_sound', False):
+             self._debug_a1_multi_perc = 100.0 # Hardcoded when no rev sound
+        # Debug blending config values regardless of has_rev_sound
+        self._debug_rev_switch = rev_switch_point_cfg
+        self._debug_idle_end = idle_end_point_cfg
+        self._debug_idle_blend = a1_multi_perc # Store the calculated a1Multi
+        self._debug_rev_blend = (100.0 - a1_multi_perc) # Store the calculated rev blend
+        self._debug_engine_idle_vol_perc_cfg = engine_idle_vol_perc_cfg
+        self._debug_full_throttle_vol_perc_cfg = full_throttle_vol_perc_cfg
+        self._debug_throttle_map_output_perc = throttle_map_output_perc
+        self._debug_base_idle_scaler_cfg_perc = idle_base_vol_perc # Use the loaded base volume
+        self._debug_idle_vol_proportion_perc_cfg = idle_vol_proportion_perc_cfg
+        
+        if getattr(vc, 'has_rev_sound', False):
+            self._debug_engine_rev_vol_perc_cfg = engine_rev_vol_perc
+            self._debug_base_rev_scaler_cfg_perc = rev_base_vol_perc
+            # Need to calculate throttle_map_output_for_rev_perc for debug if rev sound is present
+            throttle_map_output_for_rev_perc = np.interp(
+                self._current_throttle_faded_500, [0, 500],
+                [engine_rev_vol_perc, full_throttle_vol_perc]
+            )
+            self._debug_throttle_map_output_for_rev_perc = throttle_map_output_for_rev_perc
+        else:
+            # Set rev-sound specific debug values to 0 or N/A if no rev sound
+            self._debug_engine_rev_vol_perc_cfg = 0
+            self._debug_base_rev_scaler_cfg_perc = 0
+            self._debug_throttle_map_output_for_rev_perc = 0
 
     def debug_printer_thread_func(self):
-        """Prints debug information at a controlled rate (20Hz)."""
-        debug_rate = 20 # Hz - Increased debug rate
-        sleep_time = 1.0 / debug_rate
-
-        # Open log file in write mode to clear it on each run
+        """Prints debug information at a controlled rate (2Hz)."""
         log_file_path = "log.txt"
         try:
             with open(log_file_path, 'w') as log_file:
                 log_file.write("RC Engine Sound Simulator Debug Log\n")
                 log_file.write("----------------------------------\n")
+                # Write header
+                header = ("[DBG] Time(ms), RPM, ThrIn, FadThr500, TgtRPM, "
+                          "EngIdleVol%, FullThrVol%, ThrottleMapOut%, "
+                          "BaseIdleScaler%, BaseRevScaler%, "
+                          "RevSwitch, IdleEnd, IdleVolProp%, "
+                          "ThrMapOutRev%, a1Multi%, IdleVol, RevVol\n")
+                log_file.write(header)
+                log_file.flush()
+
                 while self.running:
+                    # Only log when engine is running or stopping and vehicle is selected
                     if self.current_vehicle and (self.engine_state == EngineState.RUNNING or self.engine_state == EngineState.STOPPING):
-                        # Read calculated values from instance variables and write to file
-                        log_entry = f"[DEBUG 20Hz] RPM: {self.current_rpm}, Thr: {self.throttle:.2f}, RevSwitch: {self._debug_rev_switch}, IdleEnd: {self._debug_idle_end}, IdleBlend: {self._debug_idle_blend:.2f}, RevBlend: {self._debug_rev_blend:.2f}, TotalTargetVol: {self._debug_total_target_volume:.2f}, IdleVol: {self._debug_idle_volume:.2f}, RevVol: {self._debug_rev_volume:.2f}\n"
+                        current_time_ms = int(time.time() * 1000)
+                        log_entry = (
+                            f"[DBG] {current_time_ms}, "
+                            f"{self.current_rpm:.0f}, {self.throttle_input:.2f}, {self._debug_faded_throttle_500:.1f}, {self._debug_target_rpm:.0f}, "
+                            f"{self._debug_engine_idle_vol_perc_cfg:.1f}, {self._debug_full_throttle_vol_perc_cfg:.1f}, {self._debug_throttle_map_output_perc:.1f}, "
+                            f"{self._debug_base_idle_scaler_cfg_perc:.1f}, {self._debug_base_rev_scaler_cfg_perc:.1f}, "
+                            f"{self._debug_rev_switch:.0f}, {self._debug_idle_end:.0f}, {self._debug_idle_blend:.1f}, {self._debug_rev_blend:.1f}, {self._debug_a1_multi_perc:.1f}, {self._debug_idle_channel_vol:.3f}, {self._debug_rev_channel_vol:.3f}\n"
+                        )
                         log_file.write(log_entry)
-                        log_file.flush() # Ensure data is written to disk immediately
+                        log_file.flush()
 
-                    # Wait for the next debug print interval
-                    time.sleep(sleep_time)
+                    # Control log rate
+                    time.sleep(1.0 / self.debug_log_rate_hz)
 
-                log_file.write("[DEBUG 20Hz] Debug printer thread stopping.\n")
+                log_file.write("[DEBUG] Debug printer thread stopping.\n")
         except Exception as e:
             print(f"Error writing to log.txt: {e}")
-
-        # print("[DEBUG 2Hz] Debug printer thread stopping.") # This will no longer be printed to console
 
     def physics_thread_func(self):
         """Main physics and audio update loop."""
@@ -500,8 +710,8 @@ class AudioEngine:
 
     def set_throttle(self, value):
         """Set throttle value (0.0 to 1.0)."""
-        self.throttle = max(0.0, min(1.0, value))
-        # print(f"Throttle set to {self.throttle*100:.0f}%") # Keep this print in main loop command handling
+        self.throttle_input = max(0.0, min(1.0, value))
+        # print(f"Throttle set to {self.throttle_input*100:.0f}%") # Keep this print in main loop command handling
 
 def main():
     # First, convert the sound files if they don't exist
@@ -642,4 +852,4 @@ def main():
         print("Goodbye!")
 
 if __name__ == "__main__":
-    main() 
+    main()

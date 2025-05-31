@@ -1,132 +1,141 @@
 RC Engine Sound Simulator Debug Log
 ----------------------------------
-[DEBUG 20Hz] RPM: 3, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 18, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 30, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 45, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 50, Thr: 0.00, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 56, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 68, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 80, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 95, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 107, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 122, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 134, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 149, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 1.00, RevBlend: 0.00, TotalTargetVol: 1.00, IdleVol: 1.00, RevVol: 0.00
-[DEBUG 20Hz] RPM: 164, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.94, RevBlend: 0.06, TotalTargetVol: 1.00, IdleVol: 0.94, RevVol: 0.06
-[DEBUG 20Hz] RPM: 176, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.90, RevBlend: 0.10, TotalTargetVol: 1.00, IdleVol: 0.90, RevVol: 0.10
-[DEBUG 20Hz] RPM: 191, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.84, RevBlend: 0.16, TotalTargetVol: 1.00, IdleVol: 0.84, RevVol: 0.16
-[DEBUG 20Hz] RPM: 206, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.78, RevBlend: 0.22, TotalTargetVol: 1.00, IdleVol: 0.78, RevVol: 0.22
-[DEBUG 20Hz] RPM: 221, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.72, RevBlend: 0.28, TotalTargetVol: 1.00, IdleVol: 0.72, RevVol: 0.28
-[DEBUG 20Hz] RPM: 233, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.67, RevBlend: 0.33, TotalTargetVol: 1.00, IdleVol: 0.67, RevVol: 0.33
-[DEBUG 20Hz] RPM: 248, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.61, RevBlend: 0.39, TotalTargetVol: 1.00, IdleVol: 0.61, RevVol: 0.39
-[DEBUG 20Hz] RPM: 260, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.56, RevBlend: 0.44, TotalTargetVol: 1.00, IdleVol: 0.56, RevVol: 0.44
-[DEBUG 20Hz] RPM: 272, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.51, RevBlend: 0.49, TotalTargetVol: 1.00, IdleVol: 0.51, RevVol: 0.49
-[DEBUG 20Hz] RPM: 287, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.45, RevBlend: 0.55, TotalTargetVol: 1.00, IdleVol: 0.45, RevVol: 0.55
-[DEBUG 20Hz] RPM: 302, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.39, RevBlend: 0.61, TotalTargetVol: 1.00, IdleVol: 0.39, RevVol: 0.61
-[DEBUG 20Hz] RPM: 314, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.34, RevBlend: 0.66, TotalTargetVol: 1.00, IdleVol: 0.34, RevVol: 0.66
-[DEBUG 20Hz] RPM: 326, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.30, RevBlend: 0.70, TotalTargetVol: 1.00, IdleVol: 0.30, RevVol: 0.70
-[DEBUG 20Hz] RPM: 341, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.24, RevBlend: 0.76, TotalTargetVol: 1.00, IdleVol: 0.24, RevVol: 0.76
-[DEBUG 20Hz] RPM: 353, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.19, RevBlend: 0.81, TotalTargetVol: 1.00, IdleVol: 0.19, RevVol: 0.81
-[DEBUG 20Hz] RPM: 365, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.14, RevBlend: 0.86, TotalTargetVol: 1.00, IdleVol: 0.14, RevVol: 0.86
-[DEBUG 20Hz] RPM: 377, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.09, RevBlend: 0.91, TotalTargetVol: 1.00, IdleVol: 0.09, RevVol: 0.91
-[DEBUG 20Hz] RPM: 392, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.03, RevBlend: 0.97, TotalTargetVol: 1.00, IdleVol: 0.03, RevVol: 0.97
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] RPM: 400, Thr: 0.80, RevSwitch: 150, IdleEnd: 400, IdleBlend: 0.00, RevBlend: 1.00, TotalTargetVol: 1.00, IdleVol: 0.00, RevVol: 1.00
-[DEBUG 20Hz] Debug printer thread stopping.
+[DBG] Time(ms), RPM, ThrIn, FadThr500, TgtRPM, EngIdleVol%, FullThrVol%, ThrottleMapOut%, BaseIdleScaler%, BaseRevScaler%, RevSwitch, IdleEnd, IdleVolProp%, ThrMapOutRev%, a1Multi%, IdleVol, RevVol
+[DBG] 1748589872418, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872473, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872525, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872577, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872632, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872686, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872740, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872795, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872850, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872902, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589872956, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873007, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873062, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873114, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873166, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873219, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873272, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873327, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873382, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873437, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873489, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873544, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873598, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873653, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873706, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873758, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873813, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873868, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873919, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589873974, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874030, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874085, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874140, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874193, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874247, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874301, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874356, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874407, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874463, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874517, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874569, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874624, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874677, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874732, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874787, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874842, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874897, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589874952, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875007, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875062, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875117, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875172, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875226, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875281, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875336, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875390, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875445, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875497, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875552, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875604, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875656, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875711, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875765, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875816, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875871, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875927, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589875978, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876029, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876082, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876137, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876192, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876244, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876298, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876353, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876406, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876459, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876515, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876570, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876624, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876680, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876731, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876785, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876840, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876892, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589876947, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877002, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877056, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877111, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877166, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877221, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877276, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877328, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877382, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877435, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877491, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877543, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877597, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877652, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877707, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877762, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877817, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877869, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877920, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589877975, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878030, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878085, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878138, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878194, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878249, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878304, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878359, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878414, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878468, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878523, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878578, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878629, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878681, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878736, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878791, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878845, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878897, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589878952, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879003, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879057, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879112, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879168, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879223, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879278, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879330, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879385, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879440, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879494, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879550, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879603, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879654, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879709, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DBG] 1748589879760, 3, 0.00, 0.0, 800, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0.0, 90.0, 0.000, 0.000
+[DEBUG] Debug printer thread stopping.
